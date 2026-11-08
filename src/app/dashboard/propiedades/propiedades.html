@@ -1,64 +1,189 @@
-<section class="mx-auto max-w-7xl px-6 py-10">
 
-    <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+  <main class="mx-auto max-w-6xl">
+
+    <h1 class="text-3xl font-bold text-slate-900">
+      Gestión de propiedades
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      Registro, consulta y control de disponibilidad de viviendas.
+    </p>
+
+    <!-- Registro -->
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="mb-6 text-xl font-semibold">
+        Registrar nueva propiedad
+      </h2>
+
+      <form
+        (ngSubmit)="registrarPropiedad()"
+        #formulario="ngForm"
+        class="grid gap-5 md:grid-cols-2">
+
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Propiedades</h1>
-            <p class="mt-1 text-slate-500">
-                Gestión de propiedades y disponibilidad.
-            </p>
+          <label class="mb-2 block text-sm font-medium">Código</label>
+          <input
+            type="text"
+            name="codigo"
+            [(ngModel)]="nuevaPropiedad.codigo"
+            required
+            placeholder="CASA-001"
+            class="w-full rounded-lg border border-slate-300 p-3">
         </div>
 
-        <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
+        <div>
+          <label class="mb-2 block text-sm font-medium">
+            Nombre de la propiedad
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            [(ngModel)]="nuevaPropiedad.nombre"
+            required
+            placeholder="Casa Los Pinos"
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">Ubicación</label>
+          <input
+            type="text"
+            name="ubicacion"
+            [(ngModel)]="nuevaPropiedad.ubicacion"
+            required
+            placeholder="Zona 1, Mixco"
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">
+            Precio (Q)
+          </label>
+          <input
+            type="number"
+            name="precio"
+            [(ngModel)]="nuevaPropiedad.precio"
+            required
+            min="0.01"
+            step="0.01"
+            placeholder="450000"
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="mb-2 block text-sm font-medium">
+            Descripción
+          </label>
+          <textarea
+            name="descripcion"
+            [(ngModel)]="nuevaPropiedad.descripcion"
+            rows="3"
+            placeholder="Descripción general de la vivienda"
+            class="w-full rounded-lg border border-slate-300 p-3">
+          </textarea>
+        </div>
+
+        <div class="md:col-span-2">
+          <button
+            type="submit"
+            [disabled]="formulario.invalid || guardando"
+            class="rounded-lg bg-slate-900 px-6 py-3 font-medium
+                   text-white hover:bg-slate-700
+                   disabled:cursor-not-allowed disabled:opacity-50">
+            {{ guardando ? 'Guardando...' : 'Registrar propiedad' }}
+          </button>
+        </div>
+      </form>
+
+      @if (mensaje) {
+        <p class="mt-4 text-sm text-slate-700">
+          {{ mensaje }}
+        </p>
+      }
+    </section>
+
+    <!-- Consulta -->
+    <section class="mt-10">
+
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl font-semibold">
+            Propiedades registradas
+          </h2>
+          <p class="mt-1 text-sm text-slate-500">
+            Total: {{ propiedadesFiltradas.length }}
+          </p>
+        </div>
+
+        <select
+          name="filtroEstado"
+          [(ngModel)]="filtroEstado"
+          class="rounded-lg border border-slate-300 bg-white p-3">
+          <option value="todas">Todas</option>
+          <option value="disponible">Disponibles</option>
+          <option value="reservada">Reservadas</option>
+          <option value="vendida">Vendidas</option>
+        </select>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+        <table class="w-full text-left text-sm">
+
+          <thead class="bg-slate-900 text-white">
+            <tr>
+              <th class="p-4">Código</th>
+              <th class="p-4">Propiedad</th>
+              <th class="p-4">Ubicación</th>
+              <th class="p-4">Precio</th>
+              <th class="p-4">Estado</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (propiedad of propiedadesFiltradas; track propiedad.propiedad) {
+              <tr class="border-b border-slate-100">
+
+                <td class="p-4">{{ propiedad.codigo }}</td>
+
+                <td class="p-4 font-medium">
+                  {{ propiedad.nombre }}
+                </td>
+
+                <td class="p-4">{{ propiedad.ubicacion }}</td>
+
+                <td class="p-4">
+                  Q {{ propiedad.precio }}
+                </td>
+
+                <td class="p-4">
+                  <select
+                    #estado
+                    [value]="propiedad.estado"
+                    (change)="cambiarEstado(propiedad, estado.value)"
+                    class="rounded-lg border border-slate-300 p-2">
+                    <option value="disponible">Disponible</option>
+                    <option value="reservada">Reservada</option>
+                    <option value="vendida">Vendida</option>
+                  </select>
+                </td>
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="p-6 text-center text-slate-500">
+                  No hay propiedades para mostrar.
+                </td>
+              </tr>
+            }
+          </tbody>
+
+        </table>
+      </div>
+    </section>
+    <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
             ← Volver al inicio
-        </a>
-    </header>
-
-    @if (cargando()) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            Cargando propiedades…
-        </p>
-    } @else if (error()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
-            <p>{{ error() }}</p>
-            <button
-                type="button"
-                (click)="cargar()"
-                class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-                Reintentar
-            </button>
-        </div>
-    } @else if (propiedades().length === 0) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            No hay propiedades registradas.
-        </p>
-    } @else {
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3">Título</th>
-                        <th class="px-4 py-3">Dirección</th>
-                        <th class="px-4 py-3">Tipo</th>
-                        <th class="px-4 py-3">Operación</th>
-                        <th class="px-4 py-3">Precio</th>
-                        <th class="px-4 py-3">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @for (propiedad of propiedades(); track propiedad.id) {
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3 font-medium text-slate-900">{{ propiedad.titulo }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ propiedad.direccion }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ propiedad.tipo }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ propiedad.operacion }}</td>
-                            <td class="px-4 py-3 text-slate-600">$ {{ propiedad.precio }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ propiedad.estado }}</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-
-</section>
+    </a>
+  </main>
+</div>

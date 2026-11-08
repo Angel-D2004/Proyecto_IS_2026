@@ -1,60 +1,153 @@
-<section class="mx-auto max-w-7xl px-6 py-10">
 
-    <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <div class="mx-auto max-w-6xl">
+
+    <h1 class="text-3xl font-bold text-slate-900">
+      Gestión de clientes
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      Registro y seguimiento de clientes y prospectos.
+    </p>
+
+    <!-- Formulario -->
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="mb-6 text-xl font-semibold">
+        {{ clienteEditando !== null ? 'Editar cliente' : 'Registrar nuevo prospecto' }}
+      </h2>
+
+      <form (ngSubmit)="registrarCliente()" #formulario="ngForm" class="grid gap-5 md:grid-cols-2">
+
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Clientes</h1>
-            <p class="mt-1 text-slate-500">
-                Registro y seguimiento de clientes y prospectos.
-            </p>
+          <label class="mb-2 block text-sm font-medium">Nombre</label>
+          <input type="text" name="nombre"
+                 [(ngModel)]="nuevoCliente.nombres"
+                 class="w-full rounded-lg border border-slate-300 p-3">
         </div>
 
-        <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
+        <div>
+          <label class="mb-2 block text-sm font-medium">Apellido</label>
+          <input type="text" name="apellido"
+                 [(ngModel)]="nuevoCliente.apellidos"
+                 class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">Teléfono</label>
+          <input type="tel" name="telefono"
+                 [(ngModel)]="nuevoCliente.telefono"
+                 class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">Correo electrónico</label>
+          <input type="email" name="email"
+                 [(ngModel)]="nuevoCliente.email"
+                 class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="mb-2 block text-sm font-medium">
+            ¿Cómo conoció la inmobiliaria?
+          </label>
+
+          <select name="origen"
+                  [(ngModel)]="nuevoCliente.origen"
+                  class="w-full rounded-lg border border-slate-300 p-3">
+            <option value="">Seleccione una opción</option>
+            <option value="Facebook">Facebook</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="Volantes">Volantes</option>
+            <option value="Llamada">Llamada</option>
+            <option value="Referido">Referido</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="flex gap-3 md:col-span-2">
+          <button type="submit"
+                  [disabled]="formulario.invalid || guardando"
+                  class="rounded-lg bg-slate-900 px-6 py-3 font-medium text-white
+                        disabled:opacity-50">
+            {{ guardando ? 'Guardando...' :
+              (clienteEditando !== null ? 'Guardar cambios' : 'Registrar prospecto') }}
+          </button>
+
+          @if (clienteEditando !== null) {
+            <button type="button"
+                    (click)="cancelarEdicion()"
+                    class="rounded-lg border border-slate-300 px-6 py-3">
+              Cancelar
+            </button>
+          }
+        </div>
+
+      </form>
+
+      @if (mensaje) {
+        <p class="mt-4 text-sm text-slate-700">{{ mensaje }}</p>
+      }
+
+    </section>
+
+    <!-- Listado -->
+    <section class="mt-10">
+
+      <h2 class="mb-5 text-xl font-semibold">
+        Clientes registrados
+      </h2>
+
+      <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+
+        <table class="w-full text-left text-sm">
+
+          <thead class="bg-slate-900 text-white">
+            <tr>
+              <th class="p-4">ID</th>
+              <th class="p-4">Nombre</th>
+              <th class="p-4">Teléfono</th>
+              <th class="p-4">Correo</th>
+              <th class="p-4">Origen</th>
+              <th class="p-4">Estado</th>
+              <th class="p-4">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (cliente of clientes; track cliente.cliente) {
+              <tr class="border-b border-slate-100">
+                <td class="p-4">{{ cliente.cliente }}</td>
+                <td class="p-4">
+                  {{ cliente.nombres }} {{ cliente.apellidos }}
+                </td>
+                <td class="p-4">{{ cliente.telefono || '-' }}</td>
+                <td class="p-4">{{ cliente.email || '-' }}</td>
+                <td class="p-4">{{ cliente.origen || '-' }}</td>
+                <td class="p-4">{{ cliente.estado }}</td>
+                <td class="p-4">
+                  <button (click)="editarCliente(cliente)"
+                          class="rounded-lg bg-blue-600 px-4 py-2 text-white
+                                hover:bg-blue-700">
+                    Editar
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6" class="p-6 text-center text-slate-500">
+                  Todavía no hay clientes registrados.
+                </td>
+              </tr>
+            }
+          </tbody>
+
+        </table>
+      </div>
+    </section>
+    <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
             ← Volver al inicio
         </a>
-    </header>
-
-    @if (cargando()) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            Cargando clientes…
-        </p>
-    } @else if (error()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
-            <p>{{ error() }}</p>
-            <button
-                type="button"
-                (click)="cargar()"
-                class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-                Reintentar
-            </button>
-        </div>
-    } @else if (clientes().length === 0) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            No hay clientes registrados.
-        </p>
-    } @else {
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3">Nombre</th>
-                        <th class="px-4 py-3">Email</th>
-                        <th class="px-4 py-3">Teléfono</th>
-                        <th class="px-4 py-3">Tipo</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @for (cliente of clientes(); track cliente.id) {
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3 font-medium text-slate-900">{{ cliente.nombre }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ cliente.email }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ cliente.telefono || '—' }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ cliente.tipo }}</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-    }
-
-</section>
+  </div>
+</div>

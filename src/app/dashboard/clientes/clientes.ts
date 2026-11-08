@@ -1,38 +1,120 @@
-import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 
-import { Cliente } from '../../core/models/cliente.model';
-import { ClientesService } from '../../core/services/clientes.service';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ClientesService, Cliente, NuevoCliente } from '../../services/clientes';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-clientes',
-  imports: [RouterLink],
+  imports: [FormsModule, RouterLink],
   templateUrl: './clientes.html',
 })
-export class Clientes {
-  private readonly clientesService = inject(ClientesService);
+export class Clientes implements OnInit {
 
-  protected readonly clientes = signal<Cliente[]>([]);
-  protected readonly cargando = signal(true);
-  protected readonly error = signal<string | null>(null);
+  private clientesService = inject(ClientesService);
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor() {
-    this.cargar();
+  clienteEditando: number | null = null;
+
+  clientes: Cliente[] = [];
+
+  nuevoCliente: NuevoCliente = {
+    nombres: '',
+    apellidos: '',
+    telefono: '',
+    email: '',
+    origen: ''
+  };
+
+  mensaje = '';
+  guardando = false;
+
+  ngOnInit(): void {
+    this.cargarClientes();
   }
 
-  protected cargar(): void {
-    this.cargando.set(true);
-    this.error.set(null);
-
-    this.clientesService.listar().subscribe({
-      next: (clientes) => {
-        this.clientes.set(clientes);
-        this.cargando.set(false);
+  cargarClientes(): void {
+    this.clientesService.obtenerClientes().subscribe({
+      next: (respuesta) => {
+        this.clientes = respuesta.data;
+        this.cdr.detectChanges();
       },
-      error: () => {
-        this.error.set('No se pudo cargar la información. Verifica que la API esté en ejecución.');
-        this.cargando.set(false);
-      },
+      error: (error) => {
+        console.error('Error al consultar clientes:', error);
+      }
     });
   }
+
+  
+  registrarCliente(): void {
+    if (this.guardando) return;
+
+    this.guardando = true;
+    this.mensaje = '';
+
+    const peticion = this.clienteEditando !== null
+      ? this.clientesService.actualizarCliente(
+          this.clienteEditando, this.nuevoCliente
+        )
+      : this.clientesService.registrarCliente(this.nuevoCliente);
+
+    peticion.subscribe({
+      next: () => {
+        this.mensaje = this.clienteEditando !== null
+          ? 'Cliente actualizado correctamente'
+          : 'Prospecto registrado correctamente';
+
+        this.clienteEditando = null;
+
+        this.nuevoCliente = {
+          nombres: '',
+          apellidos: '',
+          telefono: '',
+          email: '',
+          origen: ''
+        };
+
+        this.guardando = false;
+        this.cargarClientes();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al guardar cliente:', error);
+        this.mensaje = error.error?.message || 'Error al guardar cliente';
+        this.guardando = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+
+  
+  editarCliente(cliente: Cliente): void {
+    this.clienteEditando = cliente.cliente;
+
+    this.nuevoCliente = {
+      nombres: cliente.nombres,
+      apellidos: cliente.apellidos,
+      telefono: cliente.telefono ?? '',
+      email: cliente.email ?? '',
+      origen: cliente.origen ?? ''
+    };
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  cancelarEdicion(): void {
+    this.clienteEditando = null;
+
+    this.nuevoCliente = {
+      nombres: '',
+      apellidos: '',
+      telefono: '',
+      email: '',
+      origen: ''
+    };
+
+    this.mensaje = '';
+  }
+
 }

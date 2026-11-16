@@ -1,62 +1,258 @@
-<section class="mx-auto max-w-7xl px-6 py-10">
 
-    <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+  <main class="mx-auto max-w-6xl">
+
+   
+
+    <h1 class="text-3xl font-bold text-slate-900">
+      Gestión de citas
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      Registro y seguimiento de citas con clientes.
+    </p>
+
+    <!-- Registrar cita -->
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="mb-6 text-xl font-semibold">
+        Agendar nueva cita
+      </h2>
+
+      <form
+        (ngSubmit)="registrarCita()"
+        #formulario="ngForm"
+        class="grid gap-5 md:grid-cols-2">
+
         <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Citas</h1>
-            <p class="mt-1 text-slate-500">
-                Organización y seguimiento de citas con clientes.
-            </p>
+          <label class="mb-2 block text-sm font-medium">
+            Cliente
+          </label>
+
+          <select
+            name="cliente"
+            [(ngModel)]="nuevaCita.cliente"
+            required
+            class="w-full rounded-lg border border-slate-300 p-3">
+
+            <option [ngValue]="null">Seleccione un cliente</option>
+
+            @for (cliente of clientes; track cliente.cliente) {
+              <option [ngValue]="cliente.cliente">
+                {{ cliente.nombres }} {{ cliente.apellidos }}
+              </option>
+            }
+          </select>
         </div>
 
-        <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
-            ← Volver al inicio
-        </a>
-    </header>
+        <div>
+          <label class="mb-2 block text-sm font-medium">
+            Fecha y hora
+          </label>
 
-    @if (cargando()) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            Cargando citas…
-        </p>
-    } @else if (error()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
-            <p>{{ error() }}</p>
+          <input
+            type="datetime-local"
+            name="fecha"
+            [(ngModel)]="nuevaCita.fecha"
+            required
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">
+            Lugar
+          </label>
+
+          <input
+            type="text"
+            name="lugar"
+            [(ngModel)]="nuevaCita.lugar"
+            required
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div>
+          <label class="mb-2 block text-sm font-medium">
+            Motivo
+          </label>
+
+          <input
+            type="text"
+            name="motivo"
+            [(ngModel)]="nuevaCita.motivo"
+            placeholder="Presentación de viviendas"
+            class="w-full rounded-lg border border-slate-300 p-3">
+        </div>
+
+        <div class="md:col-span-2">
+          <button
+            type="submit"
+            [disabled]="formulario.invalid || guardando"
+            class="rounded-lg bg-slate-900 px-6 py-3 font-medium
+                   text-white hover:bg-slate-700
+                   disabled:opacity-50">
+            {{ guardando ? 'Guardando...' : 'Registrar cita' }}
+          </button>
+        </div>
+      </form>
+    </section>
+    
+
+    <!-- Listado de citas -->
+    <section class="mt-10">
+
+      <div class="mb-5 flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-xl font-semibold">
+          Citas registradas
+        </h2>
+
+        <select
+          name="filtroEstado"
+          [(ngModel)]="filtroEstado"
+          class="rounded-lg border border-slate-300 bg-white p-3">
+          <option value="todas">Todas</option>
+          <option value="pendiente">Pendientes</option>
+          <option value="realizada">Realizadas</option>
+          <option value="cancelada">Canceladas</option>
+        </select>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+        <table class="w-full text-left text-sm">
+
+          <thead class="bg-slate-900 text-white">
+            <tr>
+              <th class="p-4">Cliente</th>
+              <th class="p-4">Fecha</th>
+              <th class="p-4">Lugar</th>
+              <th class="p-4">Motivo</th>
+              <th class="p-4">Estado</th>
+              <th class="p-4">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (cita of citasFiltradas; track cita.cita) {
+              <tr class="border-b border-slate-100">
+
+                <td class="p-4">{{ cita.nombre_cliente }}</td>
+
+                <td class="p-4">
+                  {{ cita.fecha.replace('T', ' ').slice(0, 16) }}
+                </td>
+
+                <td class="p-4">{{ cita.lugar }}</td>
+
+                <td class="p-4">{{ cita.motivo || '-' }}</td>
+
+                <td class="p-4">{{ cita.estado_cita }}</td>
+
+                <td class="p-4">
+                  @if (cita.estado_cita === 'pendiente') {
+                    <button
+                      type="button"
+                      (click)="seleccionarCita(cita)"
+                      class="rounded-lg bg-blue-600 px-4 py-2
+                             text-white hover:bg-blue-700">
+                      Registrar resultado
+                    </button>
+                  } @else {
+                    <span class="text-slate-500">
+                      {{ cita.resultado || 'Sin observaciones' }}
+                    </span>
+                  }
+                </td>
+
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="6"
+                    class="p-6 text-center text-slate-500">
+                  No hay citas registradas.
+                </td>
+              </tr>
+            }
+          </tbody>
+
+        </table>
+      </div>
+    </section>
+
+    <!-- Resultado de cita -->
+    @if (citaSeleccionada !== null) {
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Registrar resultado de la cita
+        </h2>
+
+        <div class="grid gap-5">
+
+          <div>
+            <label class="mb-2 block text-sm font-medium">
+              Estado
+            </label>
+
+            <select
+              name="estadoResultado"
+              [(ngModel)]="estadoResultado"
+              class="w-full rounded-lg border border-slate-300 p-3">
+              <option value="realizada">Realizada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block text-sm font-medium">
+              Observaciones
+            </label>
+
+            <textarea
+              name="observacion"
+              [(ngModel)]="observacion"
+              rows="3"
+              placeholder="Describe el resultado de la cita"
+              class="w-full rounded-lg border border-slate-300 p-3">
+            </textarea>
+          </div>
+
+          <div class="flex gap-3">
             <button
-                type="button"
-                (click)="cargar()"
-                class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-                Reintentar
+              type="button"
+              (click)="guardarResultado()"
+              [disabled]="guardando || !observacion.trim()"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     text-white disabled:opacity-50">
+              Guardar resultado
             </button>
+
+            <button
+              type="button"
+              (click)="citaSeleccionada = null"
+              class="rounded-lg border border-slate-300 px-6 py-3">
+              Cancelar
+            </button>
+          </div>
+
         </div>
-    } @else if (citas().length === 0) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            No hay citas registradas.
-        </p>
-    } @else {
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3">Cliente</th>
-                        <th class="px-4 py-3">Propiedad</th>
-                        <th class="px-4 py-3">Fecha</th>
-                        <th class="px-4 py-3">Hora</th>
-                        <th class="px-4 py-3">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @for (cita of citas(); track cita.id) {
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3 font-medium text-slate-900">{{ cita.cliente_nombre }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ cita.propiedad_titulo }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ cita.fecha }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ cita.hora }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ cita.estado }}</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        
+      </section>
+      
     }
 
-</section>
+    
+
+    @if (mensaje) {
+      <p class="mt-5 rounded-lg bg-white p-4 text-slate-700">
+        {{ mensaje }}
+      </p>
+    }
+    
+
+    <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
+            ← Volver al inicio
+    </a>
+    
+  </main>
+  
+</div>

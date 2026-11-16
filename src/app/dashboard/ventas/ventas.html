@@ -1,62 +1,475 @@
-<section class="mx-auto max-w-7xl px-6 py-10">
 
-    <header class="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div>
-            <h1 class="text-2xl font-semibold text-slate-900">Ventas</h1>
-            <p class="mt-1 text-slate-500">
-                Seguimiento de oportunidades y procesos de venta.
-            </p>
-        </div>
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
 
-        <a routerLink="/" class="text-sm text-slate-500 transition hover:text-slate-900">
-            ← Volver al inicio
-        </a>
-    </header>
+  <main class="mx-auto max-w-6xl">
 
-    @if (cargando()) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            Cargando ventas…
-        </p>
-    } @else if (error()) {
-        <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-red-700">
-            <p>{{ error() }}</p>
-            <button
-                type="button"
-                (click)="cargar()"
-                class="mt-3 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
-            >
-                Reintentar
-            </button>
-        </div>
-    } @else if (ventas().length === 0) {
-        <p class="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
-            No hay ventas registradas.
-        </p>
-    } @else {
-        <div class="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                <thead class="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
-                    <tr>
-                        <th class="px-4 py-3">Cliente</th>
-                        <th class="px-4 py-3">Propiedad</th>
-                        <th class="px-4 py-3">Fecha</th>
-                        <th class="px-4 py-3">Monto</th>
-                        <th class="px-4 py-3">Estado</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100">
-                    @for (venta of ventas(); track venta.id) {
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-4 py-3 font-medium text-slate-900">{{ venta.cliente_nombre }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ venta.propiedad_titulo }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ venta.fecha }}</td>
-                            <td class="px-4 py-3 text-slate-600">$ {{ venta.monto }}</td>
-                            <td class="px-4 py-3 capitalize text-slate-600">{{ venta.estado }}</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+    <a routerLink="/" class="text-sm text-blue-600">
+      ← Regresar al inicio
+    </a>
+
+    <h1 class="mt-4 text-3xl font-bold">
+      Gestión de ventas
+    </h1>
+
+    <p class="mt-2 text-slate-500">
+      Gestión de intereses, seguimiento y oportunidades de venta.
+    </p>
+
+    <!-- Menú de ventas -->
+    <nav class="mt-8 flex flex-wrap gap-3">
+
+      <button
+        (click)="pestana = 'intereses'; mensaje = ''"
+        [class.bg-slate-900]="pestana === 'intereses'"
+        [class.text-white]="pestana === 'intereses'"
+        class="rounded-lg border px-5 py-3 font-medium">
+        Intereses
+      </button>
+
+      <button
+        (click)="pestana = 'seguimientos'; mensaje = ''"
+        [class.bg-slate-900]="pestana === 'seguimientos'"
+        [class.text-white]="pestana === 'seguimientos'"
+        class="rounded-lg border px-5 py-3 font-medium">
+        Seguimiento
+      </button>
+
+      <button
+        (click)="pestana = 'oportunidades'; mensaje = ''"
+        [class.bg-slate-900]="pestana === 'oportunidades'"
+        [class.text-white]="pestana === 'oportunidades'"
+        class="rounded-lg border px-5 py-3 font-medium">
+        Oportunidades
+      </button>
+
+    </nav>
+
+    @if (mensaje) {
+      <div class="mt-5 rounded-lg border bg-white p-4">
+        {{ mensaje }}
+      </div>
     }
 
-</section>
+    <!-- MÓDULO DE INTERESES -->
+
+    @if (pestana === 'intereses') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-6 text-xl font-semibold">
+          Registrar interés
+        </h2>
+
+        <form
+          (ngSubmit)="registrarInteres()"
+          #formInteres="ngForm"
+          class="grid gap-5 md:grid-cols-2">
+
+          <div>
+            <label class="mb-2 block">Cliente</label>
+
+            <select
+              name="cliente"
+              [(ngModel)]="nuevoInteres.cliente"
+              required
+              class="w-full rounded-lg border p-3">
+
+              <option [ngValue]="null">
+                Seleccione un cliente
+              </option>
+
+              @for (c of clientes; track c.cliente) {
+                <option [ngValue]="c.cliente">
+                  {{ c.nombres }} {{ c.apellidos }}
+                </option>
+              }
+
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block">Propiedad disponible</label>
+
+            <select
+              name="propiedad"
+              [(ngModel)]="nuevoInteres.propiedad"
+              required
+              class="w-full rounded-lg border p-3">
+
+              <option [ngValue]="null">
+                Seleccione una propiedad
+              </option>
+
+              @for (p of propiedadesDisponibles; track p.propiedad) {
+                <option [ngValue]="p.propiedad">
+                  {{ p.nombre }} - Q{{ p.precio }}
+                </option>
+              }
+
+            </select>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block">Observaciones</label>
+
+            <textarea
+              name="observacion"
+              [(ngModel)]="nuevoInteres.observacion"
+              rows="3"
+              class="w-full rounded-lg border p-3">
+            </textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button
+              type="submit"
+              [disabled]="formInteres.invalid || guardando"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     text-white disabled:opacity-50">
+              Guardar interés
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <section class="mt-8">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Intereses registrados
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+              <tr>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Propiedad</th>
+                <th class="p-4">Precio</th>
+                <th class="p-4">Observaciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (i of intereses; track i.interes) {
+                <tr class="border-b">
+                  <td class="p-4">{{ i.nombre_cliente }}</td>
+                  <td class="p-4">{{ i.nombre_propiedad }}</td>
+                  <td class="p-4">Q{{ i.precio }}</td>
+                  <td class="p-4">{{ i.observacion || '-' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="p-6 text-center">
+                    No hay intereses registrados.
+                  </td>
+                </tr>
+              }
+
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+    }
+
+    <!-- MÓDULO DE SEGUIMIENTOS -->
+
+    @if (pestana === 'seguimientos') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-6 text-xl font-semibold">
+          Registrar seguimiento
+        </h2>
+
+        <form
+          (ngSubmit)="registrarSeguimiento()"
+          #formSeguimiento="ngForm"
+          class="grid gap-5 md:grid-cols-2">
+
+          <div>
+            <label class="mb-2 block">Cliente</label>
+
+            <select
+              name="cliente"
+              [(ngModel)]="nuevoSeguimiento.cliente"
+              required
+              class="w-full rounded-lg border p-3">
+
+              <option [ngValue]="null">
+                Seleccione un cliente
+              </option>
+
+              @for (c of clientes; track c.cliente) {
+                <option [ngValue]="c.cliente">
+                  {{ c.nombres }} {{ c.apellidos }}
+                </option>
+              }
+
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block">Medio de contacto</label>
+
+            <select
+              name="tipo"
+              [(ngModel)]="nuevoSeguimiento.tipo_seg"
+              required
+              class="w-full rounded-lg border p-3">
+
+              <option value="llamada">Llamada</option>
+              <option value="whatsapp">WhatsApp</option>
+              <option value="correo">Correo</option>
+              <option value="presencial">Presencial</option>
+              <option value="otro">Otro</option>
+
+            </select>
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block">Próximo contacto</label>
+
+            <input
+              type="datetime-local"
+              name="proximo_contacto"
+              [(ngModel)]="nuevoSeguimiento.proximo_contacto"
+              class="w-full rounded-lg border p-3">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block">Observaciones</label>
+
+            <textarea
+              name="observacion"
+              [(ngModel)]="nuevoSeguimiento.observacion"
+              required
+              rows="3"
+              class="w-full rounded-lg border p-3">
+            </textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button
+              type="submit"
+              [disabled]="formSeguimiento.invalid || guardando"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     text-white disabled:opacity-50">
+              Guardar seguimiento
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- Historial del cliente -->
+
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Historial de interacciones
+        </h2>
+
+        <select
+          name="filtroCliente"
+          [(ngModel)]="filtroCliente"
+          class="mb-5 w-full rounded-lg border p-3">
+
+          <option [ngValue]="null">Todos los clientes</option>
+
+          @for (c of clientes; track c.cliente) {
+            <option [ngValue]="c.cliente">
+              {{ c.nombres }} {{ c.apellidos }}
+            </option>
+          }
+
+        </select>
+
+        @if (clienteSeleccionado) {
+          <div class="mb-6 rounded-lg bg-slate-100 p-4">
+            <p class="font-semibold">
+              {{ clienteSeleccionado.nombres }}
+              {{ clienteSeleccionado.apellidos }}
+            </p>
+
+            <p>Estado: {{ clienteSeleccionado.estado }}</p>
+            <p>Teléfono: {{ clienteSeleccionado.telefono || '-' }}</p>
+            <p>Correo: {{ clienteSeleccionado.email || '-' }}</p>
+          </div>
+        }
+
+        <h3 class="mb-4 font-semibold">Seguimientos</h3>
+
+        @for (s of seguimientosFiltrados; track s.seguimiento) {
+
+          <div class="mb-3 rounded-lg border p-4">
+
+            <p class="font-semibold">{{ s.nombre_cliente }}</p>
+
+            <p class="text-sm text-slate-500">
+              {{ s.tipo_seg }} |
+              {{ s.fecha_registro_seg.slice(0, 10) }}
+            </p>
+
+            <p class="mt-2">{{ s.observacion }}</p>
+
+            <p class="mt-2 text-sm text-blue-600">
+              Próximo contacto:
+              {{ s.proximo_contacto || 'Sin programar' }}
+            </p>
+
+          </div>
+
+        } @empty {
+          <p class="text-slate-500">No hay seguimientos.</p>
+        }
+
+        <h3 class="mb-4 mt-8 font-semibold">Historial de citas</h3>
+
+        @for (cita of citasFiltradas; track cita.cita) {
+
+          <div class="mb-3 rounded-lg border p-4">
+
+            <p class="font-semibold">{{ cita.nombre_cliente }}</p>
+
+            <p class="text-sm text-slate-500">
+              {{ cita.fecha }} | {{ cita.estado_cita }}
+            </p>
+
+            <p>{{ cita.motivo || 'Sin motivo registrado' }}</p>
+
+            <p>
+              Resultado: {{ cita.resultado || 'Sin resultado' }}
+            </p>
+
+          </div>
+
+        } @empty {
+          <p class="text-slate-500">No hay citas registradas.</p>
+        }
+
+      </section>
+    }
+
+    <!-- MÓDULO DE OPORTUNIDADES -->
+
+    @if (pestana === 'oportunidades') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-6 text-xl font-semibold">
+          Crear oportunidad de venta
+        </h2>
+
+        <form
+          (ngSubmit)="registrarOportunidad()"
+          #formOportunidad="ngForm"
+          class="grid gap-5">
+
+          <div>
+            <label class="mb-2 block">Interés registrado</label>
+
+            <select
+              name="interes"
+              [(ngModel)]="nuevaOportunidad.interes"
+              required
+              class="w-full rounded-lg border p-3">
+
+              <option [ngValue]="null">
+                Seleccione un interés
+              </option>
+
+              @for (i of interesesDisponibles; track i.interes) {
+                <option [ngValue]="i.interes">
+                  {{ i.nombre_cliente }} -
+                  {{ i.nombre_propiedad }}
+                </option>
+              }
+
+            </select>
+          </div>
+
+          <div>
+            <label class="mb-2 block">Observaciones</label>
+
+            <textarea
+              name="observacion"
+              [(ngModel)]="nuevaOportunidad.observacion_opor"
+              rows="3"
+              class="w-full rounded-lg border p-3">
+            </textarea>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              [disabled]="formOportunidad.invalid || guardando"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     text-white disabled:opacity-50">
+              Crear oportunidad
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <section class="mt-8">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Oportunidades de venta
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+              <tr>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Propiedad</th>
+                <th class="p-4">Precio</th>
+                <th class="p-4">Estado</th>
+                <th class="p-4">Observaciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (o of oportunidades; track o.oportunidad) {
+
+                <tr class="border-b">
+                  <td class="p-4">{{ o.nombre_cliente }}</td>
+                  <td class="p-4">{{ o.nombre_propiedad }}</td>
+                  <td class="p-4">Q{{ o.precio }}</td>
+
+                  <td class="p-4">
+                    <span class="rounded-full bg-green-100
+                                 px-3 py-1 text-green-700">
+                      {{ o.estado_oportu }}
+                    </span>
+                  </td>
+
+                  <td class="p-4">{{ o.observacion_opor || '-' }}</td>
+                </tr>
+
+              } @empty {
+                <tr>
+                  <td colspan="5" class="p-6 text-center">
+                    No hay oportunidades registradas.
+                  </td>
+                </tr>
+              }
+
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+    }
+
+  </main>
+</div>

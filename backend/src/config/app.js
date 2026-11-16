@@ -8,6 +8,10 @@ require('dotenv').config();
 const usuariosRoutes = require('../routes/usuarios');
 const clientesRoutes = require('../routes/clientes');
 const propiedadesRoutes = require('../routes/propiedades');
+const citasRoutes = require('../routes/citas');
+const interesesRoutes = require('../routes/intereses');
+const seguimientosRoutes = require('../routes/seguimientos');
+const oportunidadesRoutes = require('../routes/oportunidades');
 
 const app = express();
 app.use(cors());
@@ -28,5 +32,13 @@ app.use('/api/usuarios', usuariosRoutes);
 app.use('/api/clientes', clientesRoutes);
 
 app.use('/api/propiedades', propiedadesRoutes);
+
+app.use('/api/citas', citasRoutes);
+
+app.use('/api/intereses', interesesRoutes);
+
+app.use('/api/seguimientos', seguimientosRoutes);
+
+app.use('/api/oportunidades', oportunidadesRoutes);
 
 module.exports = app;

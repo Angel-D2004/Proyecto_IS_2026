@@ -3,11 +3,16 @@
 
   <main class="mx-auto max-w-6xl">
 
-    <a routerLink="/" class="text-sm text-blue-600">
-      ← Regresar al inicio
+    <!-- Regresar al inicio -->
+    <a
+      routerLink="/"
+      class="mb-6 inline-flex items-center gap-2 rounded-lg
+             bg-slate-900 px-5 py-3 text-sm font-medium
+             text-white transition hover:bg-slate-700">
+      ← Volver al inicio
     </a>
 
-    <h1 class="mt-4 text-3xl font-bold">
+    <h1 class="mt-4 text-3xl font-bold text-slate-900">
       Gestión de ventas
     </h1>
 
@@ -19,6 +24,7 @@
     <nav class="mt-8 flex flex-wrap gap-3">
 
       <button
+        type="button"
         (click)="pestana = 'intereses'; mensaje = ''"
         [class.bg-slate-900]="pestana === 'intereses'"
         [class.text-white]="pestana === 'intereses'"
@@ -27,6 +33,7 @@
       </button>
 
       <button
+        type="button"
         (click)="pestana = 'seguimientos'; mensaje = ''"
         [class.bg-slate-900]="pestana === 'seguimientos'"
         [class.text-white]="pestana === 'seguimientos'"
@@ -35,6 +42,7 @@
       </button>
 
       <button
+        type="button"
         (click)="pestana = 'oportunidades'; mensaje = ''"
         [class.bg-slate-900]="pestana === 'oportunidades'"
         [class.text-white]="pestana === 'oportunidades'"
@@ -44,16 +52,20 @@
 
     </nav>
 
+    <!-- Mensajes -->
     @if (mensaje) {
       <div class="mt-5 rounded-lg border bg-white p-4">
         {{ mensaje }}
       </div>
     }
 
+    <!-- =================================== -->
     <!-- MÓDULO DE INTERESES -->
+    <!-- =================================== -->
 
     @if (pestana === 'intereses') {
 
+      <!-- Registrar interés -->
       <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
 
         <h2 class="mb-6 text-xl font-semibold">
@@ -88,7 +100,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block">Propiedad disponible</label>
+            <label class="mb-2 block">
+              Propiedad disponible
+            </label>
 
             <select
               name="propiedad"
@@ -125,7 +139,8 @@
               type="submit"
               [disabled]="formInteres.invalid || guardando"
               class="rounded-lg bg-slate-900 px-6 py-3
-                     text-white disabled:opacity-50">
+                     text-white hover:bg-slate-700
+                     disabled:opacity-50">
               Guardar interés
             </button>
           </div>
@@ -133,6 +148,7 @@
         </form>
       </section>
 
+      <!-- Intereses registrados -->
       <section class="mt-8">
 
         <h2 class="mb-5 text-xl font-semibold">
@@ -159,11 +175,13 @@
                   <td class="p-4">{{ i.nombre_cliente }}</td>
                   <td class="p-4">{{ i.nombre_propiedad }}</td>
                   <td class="p-4">Q{{ i.precio }}</td>
-                  <td class="p-4">{{ i.observacion || '-' }}</td>
+                  <td class="p-4">
+                    {{ i.observacion || '-' }}
+                  </td>
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="4" class="p-6 text-center">
+                  <td colspan="4" class="p-6 text-center text-slate-500">
                     No hay intereses registrados.
                   </td>
                 </tr>
@@ -174,12 +192,71 @@
 
         </div>
       </section>
+
+      <!-- US-17: Historial por propiedad -->
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-2 text-xl font-semibold">
+          Historial de interés por propiedad
+        </h2>
+
+        <p class="mb-5 text-sm text-slate-500">
+          Consulta qué clientes han mostrado interés en una propiedad.
+        </p>
+
+        <select
+          name="propiedadHistorial"
+          [(ngModel)]="propiedadSeleccionada"
+          (ngModelChange)="consultarHistorialPropiedad()"
+          class="mb-5 w-full rounded-lg border border-slate-300 p-3">
+
+          <option [ngValue]="null">
+            Seleccione una propiedad
+          </option>
+
+          @for (p of propiedades; track p.propiedad) {
+            <option [ngValue]="p.propiedad">
+              {{ p.nombre }}
+            </option>
+          }
+
+        </select>
+
+        @for (i of historialPropiedad; track i.interes) {
+
+          <div class="mb-3 rounded-lg border border-slate-200 p-4">
+
+            <p class="font-semibold text-slate-900">
+              {{ i.nombre_cliente }}
+            </p>
+
+            <p class="mt-2 text-sm">
+              {{ i.observacion || 'Sin observaciones' }}
+            </p>
+
+            <p class="mt-2 text-sm text-slate-500">
+              Fecha: {{ i.fecha_registro_in }}
+            </p>
+
+          </div>
+
+        } @empty {
+          <p class="text-sm text-slate-500">
+            No hay intereses para mostrar.
+          </p>
+        }
+
+      </section>
+
     }
 
+    <!-- =================================== -->
     <!-- MÓDULO DE SEGUIMIENTOS -->
+    <!-- =================================== -->
 
     @if (pestana === 'seguimientos') {
 
+      <!-- Registrar seguimiento -->
       <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
 
         <h2 class="mb-6 text-xl font-semibold">
@@ -232,7 +309,9 @@
           </div>
 
           <div class="md:col-span-2">
-            <label class="mb-2 block">Próximo contacto</label>
+            <label class="mb-2 block">
+              Próximo contacto
+            </label>
 
             <input
               type="datetime-local"
@@ -258,7 +337,8 @@
               type="submit"
               [disabled]="formSeguimiento.invalid || guardando"
               class="rounded-lg bg-slate-900 px-6 py-3
-                     text-white disabled:opacity-50">
+                     text-white hover:bg-slate-700
+                     disabled:opacity-50">
               Guardar seguimiento
             </button>
           </div>
@@ -267,7 +347,6 @@
       </section>
 
       <!-- Historial del cliente -->
-
       <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
 
         <h2 class="mb-5 text-xl font-semibold">
@@ -279,7 +358,9 @@
           [(ngModel)]="filtroCliente"
           class="mb-5 w-full rounded-lg border p-3">
 
-          <option [ngValue]="null">Todos los clientes</option>
+          <option [ngValue]="null">
+            Todos los clientes
+          </option>
 
           @for (c of clientes; track c.cliente) {
             <option [ngValue]="c.cliente">
@@ -290,32 +371,49 @@
         </select>
 
         @if (clienteSeleccionado) {
+
           <div class="mb-6 rounded-lg bg-slate-100 p-4">
+
             <p class="font-semibold">
               {{ clienteSeleccionado.nombres }}
               {{ clienteSeleccionado.apellidos }}
             </p>
 
-            <p>Estado: {{ clienteSeleccionado.estado }}</p>
-            <p>Teléfono: {{ clienteSeleccionado.telefono || '-' }}</p>
-            <p>Correo: {{ clienteSeleccionado.email || '-' }}</p>
+            <p>
+              Estado: {{ clienteSeleccionado.estado }}
+            </p>
+
+            <p>
+              Teléfono: {{ clienteSeleccionado.telefono || '-' }}
+            </p>
+
+            <p>
+              Correo: {{ clienteSeleccionado.email || '-' }}
+            </p>
+
           </div>
         }
 
-        <h3 class="mb-4 font-semibold">Seguimientos</h3>
+        <h3 class="mb-4 font-semibold">
+          Seguimientos
+        </h3>
 
         @for (s of seguimientosFiltrados; track s.seguimiento) {
 
           <div class="mb-3 rounded-lg border p-4">
 
-            <p class="font-semibold">{{ s.nombre_cliente }}</p>
+            <p class="font-semibold">
+              {{ s.nombre_cliente }}
+            </p>
 
             <p class="text-sm text-slate-500">
               {{ s.tipo_seg }} |
               {{ s.fecha_registro_seg.slice(0, 10) }}
             </p>
 
-            <p class="mt-2">{{ s.observacion }}</p>
+            <p class="mt-2">
+              {{ s.observacion }}
+            </p>
 
             <p class="mt-2 text-sm text-blue-600">
               Próximo contacto:
@@ -325,22 +423,30 @@
           </div>
 
         } @empty {
-          <p class="text-slate-500">No hay seguimientos.</p>
+          <p class="text-slate-500">
+            No hay seguimientos.
+          </p>
         }
 
-        <h3 class="mb-4 mt-8 font-semibold">Historial de citas</h3>
+        <h3 class="mb-4 mt-8 font-semibold">
+          Historial de citas
+        </h3>
 
         @for (cita of citasFiltradas; track cita.cita) {
 
           <div class="mb-3 rounded-lg border p-4">
 
-            <p class="font-semibold">{{ cita.nombre_cliente }}</p>
+            <p class="font-semibold">
+              {{ cita.nombre_cliente }}
+            </p>
 
             <p class="text-sm text-slate-500">
               {{ cita.fecha }} | {{ cita.estado_cita }}
             </p>
 
-            <p>{{ cita.motivo || 'Sin motivo registrado' }}</p>
+            <p>
+              {{ cita.motivo || 'Sin motivo registrado' }}
+            </p>
 
             <p>
               Resultado: {{ cita.resultado || 'Sin resultado' }}
@@ -349,16 +455,22 @@
           </div>
 
         } @empty {
-          <p class="text-slate-500">No hay citas registradas.</p>
+          <p class="text-slate-500">
+            No hay citas registradas.
+          </p>
         }
 
       </section>
+
     }
 
+    <!-- =================================== -->
     <!-- MÓDULO DE OPORTUNIDADES -->
+    <!-- =================================== -->
 
     @if (pestana === 'oportunidades') {
 
+      <!-- Crear oportunidad -->
       <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
 
         <h2 class="mb-6 text-xl font-semibold">
@@ -371,7 +483,9 @@
           class="grid gap-5">
 
           <div>
-            <label class="mb-2 block">Interés registrado</label>
+            <label class="mb-2 block">
+              Interés registrado
+            </label>
 
             <select
               name="interes"
@@ -394,7 +508,9 @@
           </div>
 
           <div>
-            <label class="mb-2 block">Observaciones</label>
+            <label class="mb-2 block">
+              Observaciones
+            </label>
 
             <textarea
               name="observacion"
@@ -409,7 +525,8 @@
               type="submit"
               [disabled]="formOportunidad.invalid || guardando"
               class="rounded-lg bg-slate-900 px-6 py-3
-                     text-white disabled:opacity-50">
+                     text-white hover:bg-slate-700
+                     disabled:opacity-50">
               Crear oportunidad
             </button>
           </div>
@@ -417,11 +534,34 @@
         </form>
       </section>
 
+      <!-- US-19 y US-20 -->
+      <!-- Consultar y actualizar oportunidades -->
+
       <section class="mt-8">
 
-        <h2 class="mb-5 text-xl font-semibold">
-          Oportunidades de venta
-        </h2>
+        <div class="mb-5 flex flex-wrap items-center
+                    justify-between gap-4">
+
+          <h2 class="text-xl font-semibold">
+            Oportunidades de venta
+          </h2>
+
+          <select
+            name="filtroOportunidad"
+            [(ngModel)]="filtroOportunidad"
+            class="rounded-lg border border-slate-300
+                   bg-white p-3">
+
+            <option value="todas">Todas</option>
+            <option value="activas">Activas</option>
+            <option value="abierta">Abiertas</option>
+            <option value="en_proceso">En proceso</option>
+            <option value="perdida">Perdidas</option>
+            <option value="ganada">Ganadas</option>
+
+          </select>
+
+        </div>
 
         <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
 
@@ -434,42 +574,569 @@
                 <th class="p-4">Precio</th>
                 <th class="p-4">Estado</th>
                 <th class="p-4">Observaciones</th>
+                <th class="p-4">Acciones</th>
               </tr>
             </thead>
 
             <tbody>
 
-              @for (o of oportunidades; track o.oportunidad) {
+              @for (o of oportunidadesFiltradas; track o.oportunidad) {
 
-                <tr class="border-b">
-                  <td class="p-4">{{ o.nombre_cliente }}</td>
-                  <td class="p-4">{{ o.nombre_propiedad }}</td>
-                  <td class="p-4">Q{{ o.precio }}</td>
+                <tr class="border-b border-slate-100">
 
                   <td class="p-4">
-                    <span class="rounded-full bg-green-100
-                                 px-3 py-1 text-green-700">
-                      {{ o.estado_oportu }}
-                    </span>
+                    {{ o.nombre_cliente }}
                   </td>
 
-                  <td class="p-4">{{ o.observacion_opor || '-' }}</td>
+                  <td class="p-4">
+                    {{ o.nombre_propiedad }}
+                  </td>
+
+                  <td class="p-4">
+                    Q{{ o.precio }}
+                  </td>
+
+                  <!-- Cambiar estado -->
+                  <td class="p-4">
+
+                    <select
+                      #estado
+                      [value]="o.estado_oportu"
+                      [disabled]="guardando || o.estado_oportu === 'ganada'"
+                      (change)="cambiarEstadoOportunidad(
+                        o.oportunidad,
+                        estado.value
+                      )"
+                      class="rounded-lg border border-slate-300
+                             bg-white p-2 text-sm">
+
+                      <option value="abierta">
+                        Abierta
+                      </option>
+
+                      <option value="en_proceso">
+                        En proceso
+                      </option>
+
+                      <option value="perdida">
+                        Perdida
+                      </option>
+
+                      <option value="ganada">
+                        Ganada
+                      </option>
+
+                    </select>
+
+                  </td>
+
+                  <td class="p-4">
+                    {{ o.observacion_opor || '-' }}
+                  </td>
+
+                  <!-- Registrar seguimiento -->
+                  <td class="p-4">
+
+                    <button
+                      type="button"
+                      [disabled]="guardando"
+                      (click)="seleccionarOportunidad(o.oportunidad)"
+                      class="rounded-lg bg-blue-600 px-4 py-2
+                             text-white hover:bg-blue-700
+                             disabled:opacity-50">
+                      Seguimiento
+                    </button>
+
+                  </td>
+
                 </tr>
 
               } @empty {
                 <tr>
-                  <td colspan="5" class="p-6 text-center">
+                  <td
+                    colspan="6"
+                    class="p-6 text-center text-slate-500">
                     No hay oportunidades registradas.
                   </td>
                 </tr>
               }
 
             </tbody>
+
           </table>
 
         </div>
       </section>
+
+      <!-- US-21 -->
+      <!-- Registrar observaciones de oportunidad -->
+
+      @if (oportunidadSeleccionada !== null) {
+
+        <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+          <h2 class="mb-5 text-xl font-semibold">
+            Seguimiento de oportunidad
+            #{{ oportunidadSeleccionada }}
+          </h2>
+
+          <div class="grid gap-5">
+
+            <div>
+              <label class="mb-2 block font-medium">
+                Observaciones
+              </label>
+
+              <textarea
+                name="observacionOportunidad"
+                [(ngModel)]="observacionOportunidad"
+                rows="3"
+                placeholder="Describe el avance de la negociación"
+                class="w-full rounded-lg border border-slate-300 p-3">
+              </textarea>
+            </div>
+
+            <div>
+              <label class="mb-2 block font-medium">
+                Fecha de próxima acción
+              </label>
+
+              <input
+                type="datetime-local"
+                name="proximaAccion"
+                [(ngModel)]="proximaAccion"
+                class="w-full rounded-lg border border-slate-300 p-3">
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+
+              <button
+                type="button"
+                (click)="guardarSeguimientoOportunidad()"
+                [disabled]="guardando || !observacionOportunidad.trim()"
+                class="rounded-lg bg-slate-900 px-6 py-3
+                       text-white hover:bg-slate-700
+                       disabled:opacity-50">
+                Guardar seguimiento
+              </button>
+
+              <button
+                type="button"
+                [disabled]="guardando"
+                (click)="oportunidadSeleccionada = null"
+                class="rounded-lg border border-slate-300
+                       px-6 py-3 hover:bg-slate-100">
+                Cerrar
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- Historial de oportunidad -->
+          <h3 class="mb-4 mt-8 text-lg font-semibold">
+            Historial de seguimiento
+          </h3>
+
+          @for (s of historialOportunidad; track s.seguimiento) {
+
+            <div class="mb-3 rounded-lg border border-slate-200 p-4">
+
+              <p class="text-slate-800">
+                {{ s.observacion_segopor }}
+              </p>
+
+              <p class="mt-2 text-sm text-slate-500">
+                Registro: {{ s.fecha_registro }}
+              </p>
+
+              <p class="mt-2 text-sm text-blue-600">
+                Próxima acción:
+                {{ s.proxima_accion || 'Sin programar' }}
+              </p>
+
+            </div>
+
+          } @empty {
+            <p class="text-slate-500">
+              No hay observaciones registradas.
+            </p>
+          }
+
+        </section>
+      }
+
+      <!-- US-22 -->
+      <!-- Oportunidades pendientes de acción -->
+
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <div class="mb-5 flex flex-wrap items-center
+                    justify-between gap-3">
+
+          <div>
+            <h2 class="text-xl font-semibold">
+              Oportunidades pendientes de acción
+            </h2>
+
+            <p class="mt-1 text-sm text-slate-500">
+              Oportunidades que necesitan seguimiento.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="cargarPendientes()"
+            class="rounded-lg border border-slate-300
+                   px-4 py-2 text-sm hover:bg-slate-100">
+            Actualizar
+          </button>
+
+        </div>
+
+        @for (o of oportunidadesPendientes; track o.oportunidad) {
+
+          <div class="mb-4 rounded-lg border border-amber-200
+                      bg-amber-50 p-4">
+
+            <p class="font-semibold text-slate-900">
+              {{ o.nombre_cliente }}
+            </p>
+
+            <p class="mt-2 text-sm">
+              Propiedad: {{ o.nombre_propiedad }}
+            </p>
+
+            <p class="mt-1 text-sm">
+              Estado: {{ o.estado }}
+            </p>
+
+            <p class="mt-1 text-sm">
+              Observación: {{ o.observacion_opor }}
+            </p>
+
+            <p class="mt-2 text-sm font-medium text-amber-700">
+              Acción pendiente desde:
+              {{ o.proxima_accion }}
+            </p>
+
+            <button
+              type="button"
+              [disabled]="guardando"
+              (click)="seleccionarOportunidad(o.oportunidad)"
+              class="mt-3 rounded-lg bg-slate-900 px-4 py-2
+                     text-white hover:bg-slate-700
+                     disabled:opacity-50">
+              Dar seguimiento
+            </button>
+
+          </div>
+
+        } @empty {
+
+          <p class="rounded-lg bg-slate-50 p-5
+                    text-center text-slate-500">
+            No hay oportunidades pendientes de acción.
+          </p>
+
+        }
+
+      </section>
+
+
+      <!-- ====================================== -->
+      <!-- US-23, US-24, US-25 Y US-26 -->
+      <!-- OPCIONES DE PAGO Y FINANCIAMIENTO -->
+      <!-- ====================================== -->
+
+      <section class="mt-10 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="mb-2 text-xl font-semibold">
+          Opciones de pago y financiamiento
+        </h2>
+
+        <p class="mb-6 text-sm text-slate-500">
+          Registra la opción de pago, el enganche acordado y
+          las condiciones de financiamiento de una oportunidad.
+        </p>
+
+        <!-- Seleccionar oportunidad -->
+        <div class="mb-6">
+
+          <label class="mb-2 block font-medium">
+            Oportunidad de venta
+          </label>
+
+          <select
+            name="oportunidadPago"
+            [(ngModel)]="oportunidadPagoSeleccionada"
+            (ngModelChange)="seleccionarOportunidadPago()"
+            [disabled]="guardandoPago"
+            class="w-full rounded-lg border border-slate-300 p-3">
+
+            <option [ngValue]="null">
+              Seleccione una oportunidad
+            </option>
+
+            @for (o of oportunidades; track o.oportunidad) {
+              @if (o.estado_oportu === 'abierta' ||
+                  o.estado_oportu === 'en_proceso') {
+
+                <option [ngValue]="o.oportunidad">
+                  {{ o.nombre_cliente }} -
+                  {{ o.nombre_propiedad }}
+                </option>
+
+              }
+            }
+
+          </select>
+
+        </div>
+
+        @if (cargandoPlanPago) {
+          <p class="mb-5 text-sm text-slate-500">
+            Cargando plan de pago...
+          </p>
+        }
+
+        <!-- Formulario de pago -->
+        @if (oportunidadPagoSeleccionada !== null &&
+            !cargandoPlanPago) {
+
+          <div class="grid gap-5 md:grid-cols-2">
+
+            <!-- Opción de pago -->
+            <div>
+              <label class="mb-2 block font-medium">
+                Opción de pago
+              </label>
+
+              <select
+                name="opcionPago"
+                [(ngModel)]="nuevoPlanPago.opcion_pago"
+                class="w-full rounded-lg border border-slate-300 p-3">
+
+                <option [ngValue]="null">
+                  Seleccione una opción
+                </option>
+
+                @for (opcion of opcionesPago; track opcion.opcion_pago) {
+                  <option [ngValue]="opcion.opcion_pago">
+                    {{ opcion.nombre }}
+                  </option>
+                }
+
+              </select>
+            </div>
+
+            <!-- Enganche -->
+            <div>
+              <label class="mb-2 block font-medium">
+                Enganche acordado (Q)
+              </label>
+
+              <input
+                type="number"
+                name="enganche"
+                [(ngModel)]="nuevoPlanPago.enganche"
+                min="0"
+                step="0.01"
+                placeholder="Ejemplo: 25000"
+                class="w-full rounded-lg border border-slate-300 p-3">
+
+              <p class="mt-1 text-xs text-slate-500">
+                Este monto es un acuerdo, no un pago recibido.
+              </p>
+            </div>
+
+            <!-- Condiciones para financiamiento -->
+            @if (tipoPagoSeleccionado === 'financiamiento') {
+
+              <div class="md:col-span-2">
+
+                <h3 class="mb-2 mt-3 text-lg font-semibold">
+                  Condiciones del financiamiento
+                </h3>
+
+                <p class="text-sm text-slate-500">
+                  Registra los datos de financiamiento acordados
+                  o propuestos al cliente.
+                </p>
+
+              </div>
+
+              <!-- Entidad financiera -->
+              <div>
+                <label class="mb-2 block font-medium">
+                  Entidad financiera
+                </label>
+
+                <input
+                  type="text"
+                  name="entidadFinanciera"
+                  [(ngModel)]="nuevoPlanPago.entidad_financiera"
+                  placeholder="Nombre del banco o entidad"
+                  class="w-full rounded-lg border border-slate-300 p-3">
+              </div>
+
+              <!-- Plazo -->
+              <div>
+                <label class="mb-2 block font-medium">
+                  Plazo (meses)
+                </label>
+
+                <input
+                  type="number"
+                  name="plazoMeses"
+                  [(ngModel)]="nuevoPlanPago.plazo_meses"
+                  min="1"
+                  step="1"
+                  placeholder="Ejemplo: 240"
+                  class="w-full rounded-lg border border-slate-300 p-3">
+              </div>
+
+              <!-- Tasa -->
+              <div>
+                <label class="mb-2 block font-medium">
+                  Tasa de interés anual (%)
+                </label>
+
+                <input
+                  type="number"
+                  name="tasaAnual"
+                  [(ngModel)]="nuevoPlanPago.tasa_anual"
+                  min="0"
+                  step="0.001"
+                  placeholder="Ejemplo: 8.5"
+                  class="w-full rounded-lg border border-slate-300 p-3">
+
+                <p class="mt-1 text-xs text-slate-500">
+                  Opcional si todavía no hay una tasa definida.
+                </p>
+              </div>
+
+            }
+
+            <!-- Observaciones -->
+            <div class="md:col-span-2">
+
+              <label class="mb-2 block font-medium">
+                Condiciones y observaciones
+              </label>
+
+              <textarea
+                name="condiciones"
+                [(ngModel)]="nuevoPlanPago.condiciones"
+                rows="3"
+                placeholder="Describe los acuerdos y condiciones especiales"
+                class="w-full rounded-lg border border-slate-300 p-3">
+              </textarea>
+
+            </div>
+
+            <!-- Botón guardar -->
+            <div class="md:col-span-2">
+
+              <button
+                type="button"
+                (click)="registrarPlanPago()"
+                [disabled]="guardandoPago ||
+                            nuevoPlanPago.opcion_pago === null ||
+                            nuevoPlanPago.enganche === null"
+                class="rounded-lg bg-slate-900 px-6 py-3
+                      font-medium text-white
+                      hover:bg-slate-700
+                      disabled:opacity-50">
+
+                {{ guardandoPago
+                  ? 'Guardando...'
+                  : 'Guardar plan de pago' }}
+
+              </button>
+
+            </div>
+
+          </div>
+
+          <!-- Plan registrado -->
+          @if (planRegistrado) {
+
+            <div class="mt-8 rounded-xl border border-green-200
+                        bg-green-50 p-5">
+
+              <h3 class="mb-4 text-lg font-semibold text-green-800">
+                Plan de pago registrado
+              </h3>
+
+              <div class="grid gap-3 text-sm md:grid-cols-2">
+
+                <p>
+                  <strong>Opción:</strong>
+                  {{ planRegistrado.nombre_opcion }}
+                </p>
+
+                <p>
+                  <strong>Enganche:</strong>
+                  Q{{ planRegistrado.enganche }}
+                </p>
+
+                @if (planRegistrado.codigo === 'financiamiento') {
+
+                  <p>
+                    <strong>Entidad:</strong>
+                    {{ planRegistrado.entidad_financiera || 'Sin definir' }}
+                  </p>
+
+                  <p>
+                    <strong>Plazo:</strong>
+                    {{ planRegistrado.plazo_meses }} meses
+                  </p>
+
+                  <p>
+                    <strong>Tasa anual:</strong>
+                    {{ planRegistrado.tasa_anual === null
+                      ? 'Sin definir'
+                      : planRegistrado.tasa_anual + '%' }}
+                  </p>
+
+                }
+
+                <p class="md:col-span-2">
+                  <strong>Condiciones:</strong>
+                  {{ planRegistrado.condiciones || 'Sin observaciones' }}
+                </p>
+
+              </div>
+
+              <p class="mt-4 text-xs text-green-700">
+                Puedes modificar el formulario y guardar nuevamente
+                para actualizar este plan.
+              </p>
+
+            </div>
+
+          }
+
+        }
+
+        <!-- Mensaje -->
+        @if (mensajePago) {
+
+          <div class="mt-5 rounded-lg border border-slate-200
+                      bg-slate-50 p-4 text-sm">
+
+            {{ mensajePago }}
+
+          </div>
+
+        }
+
+      </section>
+
+
     }
 
   </main>
+
 </div>

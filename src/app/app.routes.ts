@@ -28,6 +28,18 @@ export const routes: Routes = [
     title: 'Ventas | Sistema de Gestión Inmobiliaria'
   },
   {
+    path: 'reservas',
+    loadComponent: () => import('./dashboard/reservas/reservas').then(m => m.Reservas),
+    title: 'Reservas | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
+    path: 'evaluaciones',
+    loadComponent: () => import('./dashboard/evaluaciones/evaluaciones').then(m => m.Evaluaciones),
+    title: 'Reservas | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
     path: '**',
     redirectTo: ''
   }

@@ -1,0 +1,724 @@
+
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <main class="mx-auto max-w-6xl">
+
+    <!-- REGRESAR -->
+    <a
+      routerLink="/"
+      class="inline-flex items-center rounded-lg
+             bg-slate-900 px-5 py-3 text-sm
+             font-medium text-white hover:bg-slate-700">
+      ← Volver al inicio
+    </a>
+
+    <!-- ENCABEZADO -->
+    <div class="mt-8">
+
+      <h1 class="text-3xl font-bold text-slate-900">
+        Evaluaciones crediticias
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        Información financiera y seguimiento
+        de evaluaciones de clientes.
+      </p>
+
+    </div>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+
+      <div class="mt-6 rounded-lg border
+                  border-blue-200 bg-blue-50
+                  px-5 py-4 text-blue-800">
+
+        {{ mensaje }}
+
+        <button
+          type="button"
+          (click)="mensaje = ''"
+          class="ml-4 font-bold">
+          ×
+        </button>
+
+      </div>
+
+    }
+
+    <!-- ===================================== -->
+    <!-- US-27: INFORMACIÓN FINANCIERA -->
+    <!-- ===================================== -->
+
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="text-xl font-semibold">
+        Información financiera del cliente
+      </h2>
+
+      <p class="mt-1 text-sm text-slate-500">
+        Registre los ingresos, gastos y deudas
+        mensuales declarados por el cliente.
+      </p>
+
+      <!-- SELECCIONAR CLIENTE -->
+      <div class="mt-6">
+
+        <label class="mb-2 block font-medium">
+          Seleccionar cliente
+        </label>
+
+        <select
+          name="cliente"
+          [(ngModel)]="clienteSeleccionado"
+          (ngModelChange)="seleccionarCliente()"
+          class="w-full rounded-lg border
+                 border-slate-300 bg-white p-3">
+
+          <option [ngValue]="null">
+            Seleccione un cliente
+          </option>
+
+          @for (c of clientes; track c.cliente) {
+
+            <option [ngValue]="c.cliente">
+              {{ c.nombres }} {{ c.apellidos }}
+            </option>
+
+          }
+
+        </select>
+
+      </div>
+
+      @if (cargandoFinanzas) {
+        <p class="mt-4 text-sm text-slate-500">
+          Consultando información financiera...
+        </p>
+      }
+
+      <!-- FORMULARIO FINANCIERO -->
+      <form
+        (ngSubmit)="guardarFinanzas()"
+        #formFinanzas="ngForm"
+        class="mt-6 grid gap-5 md:grid-cols-3">
+
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Ingresos mensuales (Q)
+          </label>
+
+          <input
+            type="number"
+            name="ingresos"
+            [(ngModel)]="finanzas.ingresos_mensuales"
+            min="0"
+            step="0.01"
+            required
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+
+        </div>
+
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Gastos mensuales (Q)
+          </label>
+
+          <input
+            type="number"
+            name="gastos"
+            [(ngModel)]="finanzas.gastos_mensuales"
+            min="0"
+            step="0.01"
+            required
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+
+        </div>
+
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Deudas mensuales (Q)
+          </label>
+
+          <input
+            type="number"
+            name="deudas"
+            [(ngModel)]="finanzas.deudas_mensuales"
+            min="0"
+            step="0.01"
+            required
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+
+        </div>
+
+        <div class="flex flex-wrap gap-3 md:col-span-3">
+
+          <button
+            type="submit"
+            [disabled]="
+              formFinanzas.invalid ||
+              clienteSeleccionado === null ||
+              guardando ||
+              cargandoFinanzas
+            "
+            class="rounded-lg bg-slate-900
+                   px-6 py-3 font-medium text-white
+                   hover:bg-slate-700
+                   disabled:opacity-50">
+
+            {{ guardando
+               ? 'Guardando...'
+               : 'Guardar información' }}
+
+          </button>
+
+          <button
+            type="button"
+            (click)="consultarCapacidad()"
+            [disabled]="clienteSeleccionado === null"
+            class="rounded-lg border border-slate-300
+                   bg-white px-6 py-3 font-medium
+                   hover:bg-slate-100
+                   disabled:opacity-50">
+
+            Consultar capacidad de pago
+
+          </button>
+
+        </div>
+
+      </form>
+
+      <!-- ================================= -->
+      <!-- US-28: CAPACIDAD DE PAGO -->
+      <!-- ================================= -->
+
+      @if (capacidad) {
+
+        <div class="mt-8 rounded-xl bg-slate-100 p-6">
+
+          <h3 class="text-lg font-semibold">
+            Capacidad de pago referencial
+          </h3>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-4">
+
+            <div class="rounded-lg bg-white p-4">
+
+              <p class="text-sm text-slate-500">
+                Ingresos mensuales
+              </p>
+
+              <p class="mt-2 text-xl font-bold text-green-700">
+                Q{{ capacidad.ingresos_mensuales | number:'1.2-2' }}
+              </p>
+
+            </div>
+
+            <div class="rounded-lg bg-white p-4">
+
+              <p class="text-sm text-slate-500">
+                Gastos mensuales
+              </p>
+
+              <p class="mt-2 text-xl font-bold">
+                Q{{ capacidad.gastos_mensuales | number:'1.2-2' }}
+              </p>
+
+            </div>
+
+            <div class="rounded-lg bg-white p-4">
+
+              <p class="text-sm text-slate-500">
+                Deudas mensuales
+              </p>
+
+              <p class="mt-2 text-xl font-bold">
+                Q{{ capacidad.deudas_mensuales | number:'1.2-2' }}
+              </p>
+
+            </div>
+
+            <div class="rounded-lg bg-white p-4">
+
+              <p class="text-sm text-slate-500">
+                Disponible mensual
+              </p>
+
+              <p
+                class="mt-2 text-xl font-bold"
+                [class.text-green-700]="
+                  capacidad.disponible_mensual >= 0
+                "
+                [class.text-red-700]="
+                  capacidad.disponible_mensual < 0
+                ">
+
+                Q{{ capacidad.disponible_mensual | number:'1.2-2' }}
+
+              </p>
+
+            </div>
+
+          </div>
+
+          <p class="mt-4 text-sm text-slate-500">
+            Cálculo referencial basado en los datos
+            declarados por el cliente. No representa
+            una aprobación bancaria ni una cuota
+            máxima de crédito autorizada.
+          </p>
+
+        </div>
+
+      }
+
+    </section>
+
+    <!-- ===================================== -->
+    <!-- US-29: CREAR EVALUACIÓN -->
+    <!-- ===================================== -->
+
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="text-xl font-semibold">
+        Crear evaluación crediticia
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-500">
+        Seleccione una oportunidad activa.
+        El cliente debe tener información financiera
+        registrada.
+      </p>
+
+      <form
+        (ngSubmit)="crearEvaluacion()"
+        class="mt-6 grid gap-4 md:grid-cols-3">
+
+        <div class="md:col-span-2">
+
+          <label class="mb-2 block font-medium">
+            Oportunidad de venta
+          </label>
+
+          <select
+            name="oportunidad"
+            [(ngModel)]="oportunidadSeleccionada"
+            required
+            class="w-full rounded-lg border
+                   border-slate-300 bg-white p-3">
+
+            <option [ngValue]="null">
+              Seleccione una oportunidad
+            </option>
+
+            @for (
+              o of oportunidadesDisponibles;
+              track o.oportunidad
+            ) {
+
+              <option [ngValue]="o.oportunidad">
+                #{{ o.oportunidad }} -
+                {{ o.nombre_cliente || 'Cliente' }} -
+                {{ o.nombre_propiedad || 'Propiedad' }}
+              </option>
+
+            }
+
+          </select>
+
+        </div>
+
+        <div class="flex items-end">
+
+          <button
+            type="submit"
+            [disabled]="
+              oportunidadSeleccionada === null ||
+              guardando
+            "
+            class="w-full rounded-lg bg-slate-900
+                   px-6 py-3 font-medium text-white
+                   hover:bg-slate-700
+                   disabled:opacity-50">
+
+            Crear evaluación
+
+          </button>
+
+        </div>
+
+      </form>
+
+      @if (oportunidadesDisponibles.length === 0) {
+
+        <p class="mt-4 text-sm text-amber-700">
+          No hay oportunidades activas disponibles
+          para crear una evaluación nueva.
+        </p>
+
+      }
+
+    </section>
+
+    <!-- ===================================== -->
+    <!-- US-30: LISTADO DE EVALUACIONES -->
+    <!-- ===================================== -->
+
+    <section class="mt-8">
+
+      <div class="mb-5 flex flex-wrap items-center
+                  justify-between gap-4">
+
+        <div>
+
+          <h2 class="text-xl font-semibold">
+            Evaluaciones registradas
+          </h2>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Consulte y seleccione una evaluación
+            para actualizar su resultado.
+          </p>
+
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+
+          <select
+            name="filtroEstado"
+            [(ngModel)]="filtroEstado"
+            class="rounded-lg border
+                   border-slate-300 bg-white p-3">
+
+            <option value="todas">
+              Todas
+            </option>
+
+            <option value="pendiente">
+              Pendientes
+            </option>
+
+            <option value="en_revision">
+              En revisión
+            </option>
+
+            <option value="aprobada">
+              Aprobadas
+            </option>
+
+            <option value="rechazada">
+              Rechazadas
+            </option>
+
+          </select>
+
+          <button
+            type="button"
+            (click)="cargarEvaluaciones()"
+            class="rounded-lg border border-slate-300
+                   bg-white px-4 py-3 hover:bg-slate-100">
+            Actualizar
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="overflow-x-auto rounded-xl
+                  bg-white shadow-sm">
+
+        <table class="w-full text-left text-sm">
+
+          <thead class="bg-slate-900 text-white">
+
+            <tr>
+              <th class="p-4">Evaluación</th>
+              <th class="p-4">Cliente</th>
+              <th class="p-4">Propiedad</th>
+              <th class="p-4">Estado</th>
+              <th class="p-4">Fecha</th>
+              <th class="p-4">Acciones</th>
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            @for (
+              e of evaluacionesFiltradas;
+              track e.evaluacion
+            ) {
+
+              <tr class="border-b border-slate-100">
+
+                <td class="p-4">
+                  #{{ e.evaluacion }}
+                </td>
+
+                <td class="p-4">
+                  {{ e.nombre_cliente }}
+                </td>
+
+                <td class="p-4">
+                  {{ e.nombre_propiedad }}
+                </td>
+
+                <td class="p-4">
+
+                  <span
+                    class="rounded-full px-3 py-1
+                           text-xs font-semibold"
+                    [class.bg-amber-100]="
+                      e.estado === 'pendiente'
+                    "
+                    [class.text-amber-700]="
+                      e.estado === 'pendiente'
+                    "
+                    [class.bg-blue-100]="
+                      e.estado === 'en_revision'
+                    "
+                    [class.text-blue-700]="
+                      e.estado === 'en_revision'
+                    "
+                    [class.bg-green-100]="
+                      e.estado === 'aprobada'
+                    "
+                    [class.text-green-700]="
+                      e.estado === 'aprobada'
+                    "
+                    [class.bg-red-100]="
+                      e.estado === 'rechazada'
+                    "
+                    [class.text-red-700]="
+                      e.estado === 'rechazada'
+                    ">
+
+                    {{ e.estado }}
+
+                  </span>
+
+                </td>
+
+                <td class="p-4">
+                  {{ e.fecha_registro_eval | date:'dd/MM/yyyy' }}
+                </td>
+
+                <td class="p-4">
+
+                  <button
+                    type="button"
+                    (click)="seleccionarEvaluacion(e)"
+                    class="rounded-lg bg-slate-800
+                           px-4 py-2 text-white
+                           hover:bg-slate-600">
+
+                    Gestionar
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+            } @empty {
+
+              <tr>
+
+                <td
+                  colspan="6"
+                  class="p-8 text-center text-slate-500">
+
+                  No hay evaluaciones para mostrar.
+
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+    <!-- ===================================== -->
+    <!-- US-31: ACTUALIZAR ESTADO -->
+    <!-- ===================================== -->
+
+    @if (evaluacionActual) {
+
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Gestionar evaluación #{{ evaluacionActual.evaluacion }}
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Cliente: {{ evaluacionActual.nombre_cliente }}
+        </p>
+
+        <p class="mt-1 text-sm text-slate-500">
+          Propiedad: {{ evaluacionActual.nombre_propiedad }}
+        </p>
+
+        <form
+          (ngSubmit)="actualizarEvaluacion()"
+          class="mt-6 space-y-5">
+
+          <div>
+
+            <label class="mb-2 block font-medium">
+              Estado de evaluación
+            </label>
+
+            <select
+              name="estado"
+              [(ngModel)]="estadoEvaluacion"
+              class="w-full rounded-lg border
+                     border-slate-300 bg-white p-3">
+
+              <option value="pendiente">
+                Pendiente
+              </option>
+
+              <option value="en_revision">
+                En revisión
+              </option>
+
+              <option value="aprobada">
+                Aprobada
+              </option>
+
+              <option value="rechazada">
+                Rechazada
+              </option>
+
+            </select>
+
+          </div>
+
+          <div>
+
+            <label class="mb-2 block font-medium">
+              Resultado de evaluación
+            </label>
+
+            <textarea
+              name="resultado"
+              [(ngModel)]="resultadoEvaluacion"
+              rows="4"
+              placeholder="Escriba el resultado y su justificación"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+            </textarea>
+
+            <p class="mt-2 text-xs text-slate-500">
+              El resultado es obligatorio para
+              aprobar o rechazar una evaluación.
+            </p>
+
+          </div>
+
+          <button
+            type="submit"
+            [disabled]="guardando"
+            class="rounded-lg bg-slate-900
+                   px-6 py-3 font-medium text-white
+                   hover:bg-slate-700
+                   disabled:opacity-50">
+
+            Guardar resultado
+
+          </button>
+
+        </form>
+
+        <!-- ================================= -->
+        <!-- US-32: OBSERVACIONES -->
+        <!-- ================================= -->
+
+        <div class="mt-8 border-t border-slate-200 pt-6">
+
+          <h3 class="text-lg font-semibold">
+            Historial de observaciones
+          </h3>
+
+          <form
+            (ngSubmit)="registrarObservacion()"
+            class="mt-5 space-y-4">
+
+            <textarea
+              name="nuevaObservacion"
+              [(ngModel)]="nuevaObservacion"
+              rows="3"
+              placeholder="Registrar una observación sobre la evaluación..."
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+            </textarea>
+
+            <button
+              type="submit"
+              [disabled]="
+                guardando ||
+                !nuevaObservacion.trim()
+              "
+              class="rounded-lg bg-blue-700
+                     px-6 py-3 font-medium text-white
+                     hover:bg-blue-800
+                     disabled:opacity-50">
+
+              Agregar observación
+
+            </button>
+
+          </form>
+
+          <div class="mt-6 space-y-3">
+
+            @for (
+              obs of observaciones;
+              track obs.observacion_id
+            ) {
+
+              <div class="rounded-lg border
+                          border-slate-200 bg-slate-50 p-4">
+
+                <p class="text-slate-800">
+                  {{ obs.observacion }}
+                </p>
+
+                <p class="mt-2 text-xs text-slate-500">
+                  {{ obs.fecha_registro_ob | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+
+              </div>
+
+            } @empty {
+
+              <p class="py-4 text-sm text-slate-500">
+                No hay observaciones registradas.
+              </p>
+
+            }
+
+          </div>
+
+        </div>
+
+      </section>
+
+    }
+
+  </main>
+
+</div>

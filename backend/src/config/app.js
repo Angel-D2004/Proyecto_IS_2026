@@ -13,6 +13,8 @@ const interesesRoutes = require('../routes/intereses');
 const seguimientosRoutes = require('../routes/seguimientos');
 const oportunidadesRoutes = require('../routes/oportunidades');
 const pagosRoutes = require('../routes/pagos');
+const evaluacionesRoutes = require('../routes/evaluaciones');
+const reservasRoutes = require('../routes/reservas');
 
 const app = express();
 app.use(cors());
@@ -43,5 +45,9 @@ app.use('/api/seguimientos', seguimientosRoutes);
 app.use('/api/oportunidades', oportunidadesRoutes);
 
 app.use('/api/pagos', pagosRoutes);
+
+app.use('/api/evaluaciones', evaluacionesRoutes);
+
+app.use('/api/reservas', reservasRoutes);
 
 module.exports = app;

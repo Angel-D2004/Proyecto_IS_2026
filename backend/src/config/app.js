@@ -20,6 +20,7 @@ const documentosRoutes = require('../routes/documentos');
 const cierresRoutes = require('../routes/cierres');
 const ventasFinalesRoutes = require('../routes/ventas_finales');
 const reportesRoutes = require('../routes/reportes');
+const authRoutes = require('../routes/auth');
 
 const app = express();
 app.use(cors());
@@ -64,5 +65,7 @@ app.use('/api/cierres', cierresRoutes);
 app.use('/api/ventas_finales', ventasFinalesRoutes);
 
 app.use('/api/reportes', reportesRoutes);
+
+app.use('/api/auth', authRoutes);
 
 module.exports = app;

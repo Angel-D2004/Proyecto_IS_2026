@@ -1,0 +1,532 @@
+
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <main class="mx-auto max-w-6xl">
+
+    <!-- VOLVER AL INICIO -->
+    <a
+      routerLink="/"
+      class="inline-flex items-center rounded-lg
+             bg-slate-900 px-5 py-3 text-sm
+             font-medium text-white hover:bg-slate-700">
+      ← Volver al inicio
+    </a>
+
+    <!-- ENCABEZADO -->
+    <div class="mt-8">
+
+      <h1 class="text-3xl font-bold text-slate-900">
+        Gestión de documentación
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        Control de documentos asociados a las
+        solicitudes de crédito de los clientes.
+      </p>
+
+    </div>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+
+      <div
+        class="mt-6 rounded-lg border px-5 py-4"
+        [class.border-green-200]="tipoMensaje === 'exito'"
+        [class.bg-green-50]="tipoMensaje === 'exito'"
+        [class.text-green-800]="tipoMensaje === 'exito'"
+        [class.border-red-200]="tipoMensaje === 'error'"
+        [class.bg-red-50]="tipoMensaje === 'error'"
+        [class.text-red-800]="tipoMensaje === 'error'">
+
+        <div class="flex items-center justify-between gap-4">
+
+          <p>{{ mensaje }}</p>
+
+          <button
+            type="button"
+            (click)="mensaje = ''"
+            class="font-bold">
+            ×
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+    <!-- ===================================== -->
+    <!-- SELECCIONAR SOLICITUD -->
+    <!-- ===================================== -->
+
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="text-xl font-semibold">
+        Seleccionar solicitud de crédito
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-500">
+        Seleccione el trámite para consultar
+        o gestionar su documentación.
+      </p>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+
+        <select
+          name="solicitud"
+          [(ngModel)]="solicitudSeleccionada"
+          (ngModelChange)="seleccionarSolicitud()"
+          class="min-w-64 flex-1 rounded-lg border
+                 border-slate-300 bg-white p-3">
+
+          <option [ngValue]="null">
+            Seleccione una solicitud
+          </option>
+
+          @for (s of solicitudes; track s.solicitud) {
+
+            <option [ngValue]="s.solicitud">
+              Solicitud #{{ s.solicitud }} -
+              {{ s.nombre_cliente }} -
+              {{ s.nombre_propiedad }}
+            </option>
+
+          }
+
+        </select>
+
+        <button
+          type="button"
+          (click)="cargarSolicitudes()"
+          class="rounded-lg border border-slate-300
+                 bg-white px-5 py-3 hover:bg-slate-100">
+
+          Actualizar solicitudes
+        </button>
+
+      </div>
+
+      @if (solicitudActual) {
+
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Cliente
+            </p>
+            <p class="mt-2 font-semibold">
+              {{ solicitudActual.nombre_cliente }}
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Propiedad
+            </p>
+            <p class="mt-2 font-semibold">
+              {{ solicitudActual.nombre_propiedad }}
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Estado de solicitud
+            </p>
+            <p class="mt-2 font-semibold">
+              {{ solicitudActual.estado }}
+            </p>
+          </div>
+
+        </div>
+
+      }
+
+    </section>
+
+    @if (solicitudSeleccionada !== null) {
+
+      <!-- ===================================== -->
+      <!-- RESUMEN DOCUMENTAL -->
+      <!-- ===================================== -->
+
+      <section class="mt-8">
+
+        <div class="mb-5 flex flex-wrap items-center
+                    justify-between gap-3">
+
+          <h2 class="text-xl font-semibold">
+            Resumen del expediente
+          </h2>
+
+          <button
+            type="button"
+            (click)="actualizarDocumentos()"
+            class="rounded-lg border border-slate-300
+                   bg-white px-5 py-3 hover:bg-slate-100">
+            Actualizar expediente
+          </button>
+
+        </div>
+
+        @if (resumen) {
+
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">Total</p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.total }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-amber-50 p-5">
+              <p class="text-sm text-amber-700">Pendientes</p>
+              <p class="mt-2 text-3xl font-bold text-amber-700">
+                {{ resumen.pendientes }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-blue-50 p-5">
+              <p class="text-sm text-blue-700">Recibidos</p>
+              <p class="mt-2 text-3xl font-bold text-blue-700">
+                {{ resumen.recibidos }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-green-50 p-5">
+              <p class="text-sm text-green-700">Verificados</p>
+              <p class="mt-2 text-3xl font-bold text-green-700">
+                {{ resumen.verificados }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-red-50 p-5">
+              <p class="text-sm text-red-700">Rechazados</p>
+              <p class="mt-2 text-3xl font-bold text-red-700">
+                {{ resumen.rechazados }}
+              </p>
+            </div>
+
+          </div>
+
+          <p class="mt-3 text-xs text-slate-500">
+            El resumen contabiliza únicamente los
+            documentos que ya fueron registrados.
+          </p>
+
+        }
+
+      </section>
+
+      <!-- ===================================== -->
+      <!-- REGISTRAR DOCUMENTO -->
+      <!-- ===================================== -->
+
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Registrar documento
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Registre el tipo de documento requerido.
+          Su estado inicial será Pendiente.
+        </p>
+
+        @if (solicitudActual?.estado === 'rechazada') {
+
+          <p class="mt-4 rounded-lg bg-amber-50 p-4
+                    text-sm text-amber-800">
+            Esta solicitud fue rechazada. No se
+            permiten nuevos registros ni cambios
+            de estado en sus documentos.
+          </p>
+
+        } @else {
+
+          <form
+            (ngSubmit)="registrarDocumento()"
+            #formDocumento="ngForm"
+            class="mt-6 grid gap-5 md:grid-cols-2">
+
+            <!-- TIPO -->
+            <div class="md:col-span-2">
+
+              <label class="mb-2 block font-medium">
+                Tipo de documento
+              </label>
+
+              <select
+                name="tipo_documento"
+                [(ngModel)]="nuevoDocumento.tipo_documento"
+                required
+                class="w-full rounded-lg border
+                       border-slate-300 bg-white p-3">
+
+                <option value="">
+                  Seleccione un tipo de documento
+                </option>
+
+                @for (tipo of tiposDisponibles; track tipo.tipo) {
+
+                  <option [value]="tipo.tipo">
+                    {{ tipo.nombre }}
+                  </option>
+
+                }
+
+              </select>
+
+              @if (tiposDisponibles.length === 0 && !cargando) {
+
+                <p class="mt-2 text-sm text-green-700">
+                  Todos los tipos de documentos del
+                  catálogo ya están registrados.
+                </p>
+
+              }
+
+            </div>
+
+            <!-- OBSERVACIÓN -->
+            <div class="md:col-span-2">
+
+              <label class="mb-2 block font-medium">
+                Observación (opcional)
+              </label>
+
+              <textarea
+                name="observacion"
+                [(ngModel)]="nuevoDocumento.observacion"
+                maxlength="500"
+                rows="3"
+                placeholder="Ejemplo: pendiente de entregar"
+                class="w-full rounded-lg border
+                       border-slate-300 p-3">
+              </textarea>
+
+            </div>
+
+            <div class="md:col-span-2">
+
+              <button
+                type="submit"
+                [disabled]="
+                  formDocumento.invalid ||
+                  guardando ||
+                  cargando ||
+                  tiposDisponibles.length === 0
+                "
+                class="rounded-lg bg-slate-900
+                       px-6 py-3 font-medium text-white
+                       hover:bg-slate-700
+                       disabled:opacity-50">
+
+                {{ guardando
+                   ? 'Guardando...'
+                   : 'Registrar documento' }}
+
+              </button>
+
+            </div>
+
+          </form>
+
+        }
+
+      </section>
+
+      <!-- ===================================== -->
+      <!-- DOCUMENTOS REGISTRADOS -->
+      <!-- ===================================== -->
+
+      <section class="mt-10">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Documentos registrados
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+
+              <tr>
+                <th class="p-4">ID</th>
+                <th class="p-4">Documento</th>
+                <th class="p-4">Estado</th>
+                <th class="p-4">Fecha</th>
+                <th class="p-4">Cambiar estado</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              @for (d of documentos; track d.documento) {
+
+                <tr class="border-b border-slate-100">
+
+                  <td class="p-4">
+                    #{{ d.documento }}
+                  </td>
+
+                  <td class="p-4 font-medium">
+                    {{ nombreDocumento(d.tipo_documento) }}
+                  </td>
+
+                  <td class="p-4">
+
+                    <span
+                      class="rounded-full px-3 py-1
+                             text-xs font-semibold"
+                      [class.bg-amber-100]="d.estado === 'pendiente'"
+                      [class.text-amber-700]="d.estado === 'pendiente'"
+                      [class.bg-blue-100]="d.estado === 'recibido'"
+                      [class.text-blue-700]="d.estado === 'recibido'"
+                      [class.bg-green-100]="d.estado === 'verificado'"
+                      [class.text-green-700]="d.estado === 'verificado'"
+                      [class.bg-red-100]="d.estado === 'rechazado'"
+                      [class.text-red-700]="d.estado === 'rechazado'">
+
+                      {{ nombreEstado(d.estado) }}
+
+                    </span>
+
+                  </td>
+
+                  <td class="p-4">
+                    {{ d.fecha_actualizacion | date:'dd/MM/yyyy' }}
+                  </td>
+
+                  <td class="p-4">
+
+                    @if (
+                      estadosDisponibles(d).length > 0 &&
+                      solicitudActual?.estado !== 'rechazada'
+                    ) {
+
+                      <div class="flex min-w-52 flex-col gap-2">
+
+                        <select
+                          [name]="'estado_' + d.documento"
+                          [(ngModel)]="estadosSeleccionados[d.documento]"
+                          class="rounded-lg border
+                                 border-slate-300 bg-white p-2">
+
+                          <option [ngValue]="d.estado" disabled>
+                            Seleccione un nuevo estado
+                          </option>
+
+                          @for (
+                            estado of estadosDisponibles(d);
+                            track estado
+                          ) {
+
+                            <option [ngValue]="estado">
+                              {{ nombreEstado(estado) }}
+                            </option>
+
+                          }
+
+                        </select>
+
+                        <input
+                          type="text"
+                          [name]="'obs_' + d.documento"
+                          [(ngModel)]="observaciones[d.documento]"
+                          maxlength="500"
+                          placeholder="Observación opcional"
+                          class="rounded-lg border
+                                 border-slate-300 p-2">
+
+                        <button
+                          type="button"
+                          [disabled]="
+                            guardando ||
+                            !estadosDisponibles(d).includes(
+                              estadosSeleccionados[d.documento]
+                            )
+                          "
+                          (click)="actualizarEstado(d)"
+                          class="rounded-lg bg-blue-700
+                                 px-3 py-2 text-white
+                                 hover:bg-blue-800
+                                 disabled:opacity-50">
+
+                          Guardar estado
+
+                        </button>
+
+                      </div>
+
+                    } @else {
+
+                      <span class="text-slate-500">
+                        Sin acciones
+                      </span>
+
+                    }
+
+                  </td>
+
+                </tr>
+
+                @if (d.observacion) {
+
+                  <tr class="border-b border-slate-100 bg-slate-50">
+
+                    <td colspan="5" class="px-4 py-3 text-slate-600">
+
+                      <strong>Observación:</strong>
+                      {{ d.observacion }}
+
+                    </td>
+
+                  </tr>
+
+                }
+
+              } @empty {
+
+                <tr>
+
+                  <td
+                    colspan="5"
+                    class="p-8 text-center text-slate-500">
+
+                    {{ cargando
+                       ? 'Cargando documentos...'
+                       : 'No hay documentos registrados.' }}
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    } @else {
+
+      <section class="mt-8 rounded-xl bg-white p-8 text-center">
+
+        <p class="text-slate-500">
+          Seleccione una solicitud de crédito
+          para consultar su expediente documental.
+        </p>
+
+      </section>
+
+    }
+
+  </main>
+
+</div>

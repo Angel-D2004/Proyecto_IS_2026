@@ -1,0 +1,456 @@
+
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <main class="mx-auto max-w-6xl">
+
+    <a
+      routerLink="/"
+      class="inline-flex rounded-lg bg-slate-900
+             px-5 py-3 text-white hover:bg-slate-700">
+      ← Volver al inicio
+    </a>
+
+    <div class="mt-8 flex flex-wrap items-center
+                justify-between gap-4">
+
+      <div>
+        <h1 class="text-3xl font-bold">
+          Firma y entrega de viviendas
+        </h1>
+
+        <p class="mt-2 text-slate-500">
+          Registro administrativo del cierre de ventas.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="actualizarTodo()"
+        class="rounded-lg border border-slate-300
+               bg-white px-5 py-3 hover:bg-slate-100">
+        Actualizar datos
+      </button>
+    </div>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+
+      <div
+        class="mt-6 rounded-lg border p-4"
+        [class.bg-green-50]="tipoMensaje === 'exito'"
+        [class.text-green-800]="tipoMensaje === 'exito'"
+        [class.border-green-200]="tipoMensaje === 'exito'"
+        [class.bg-red-50]="tipoMensaje === 'error'"
+        [class.text-red-800]="tipoMensaje === 'error'"
+        [class.border-red-200]="tipoMensaje === 'error'">
+
+        <div class="flex justify-between gap-4">
+          <span>{{ mensaje }}</span>
+
+          <button type="button" (click)="mensaje = ''">
+            ×
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- PESTAÑAS -->
+    <div class="mt-8 flex flex-wrap gap-3">
+
+      <button
+        type="button"
+        (click)="cambiarPestana('firmas')"
+        [class.bg-slate-900]="pestana === 'firmas'"
+        [class.text-white]="pestana === 'firmas'"
+        [class.bg-white]="pestana !== 'firmas'"
+        class="rounded-lg px-6 py-3 font-medium shadow-sm">
+        Firmas de escrituras
+      </button>
+
+      <button
+        type="button"
+        (click)="cambiarPestana('entregas')"
+        [class.bg-slate-900]="pestana === 'entregas'"
+        [class.text-white]="pestana === 'entregas'"
+        [class.bg-white]="pestana !== 'entregas'"
+        class="rounded-lg px-6 py-3 font-medium shadow-sm">
+        Entregas de viviendas
+      </button>
+    </div>
+
+    <!-- ===================================== -->
+    <!-- PESTAÑA FIRMAS -->
+    <!-- ===================================== -->
+    @if (pestana === 'firmas') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Registrar firma de escritura
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Solo se muestran solicitudes aprobadas,
+          con reserva confirmada y documentación
+          obligatoria verificada.
+        </p>
+
+        <form
+          #formFirma="ngForm"
+          (ngSubmit)="registrarFirma()"
+          class="mt-6 grid gap-5 md:grid-cols-2">
+
+          <div class="md:col-span-2">
+
+            <label class="mb-2 block font-medium">
+              Solicitud de crédito
+            </label>
+
+            <select
+              name="solicitud"
+              [(ngModel)]="nuevaFirma.solicitud"
+              required
+              class="w-full rounded-lg border
+                     border-slate-300 bg-white p-3">
+
+              <option [ngValue]="null">
+                Seleccione una solicitud
+              </option>
+
+              @for (
+                s of solicitudesDisponibles;
+                track s.solicitud
+              ) {
+                <option [ngValue]="s.solicitud">
+                  Solicitud #{{ s.solicitud }} -
+                  {{ s.nombre_cliente }} -
+                  {{ s.nombre_propiedad }}
+                </option>
+              }
+            </select>
+
+            @if (solicitudesDisponibles.length === 0) {
+              <p class="mt-2 text-sm text-amber-700">
+                No hay solicitudes disponibles para firma.
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-2 block font-medium">
+              Fecha de firma
+            </label>
+
+            <input
+              type="date"
+              name="fecha_firma"
+              [(ngModel)]="nuevaFirma.fecha_firma"
+              required
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+          </div>
+
+          <div>
+            <label class="mb-2 block font-medium">
+              Nombre del notario
+            </label>
+
+            <input
+              type="text"
+              name="notario"
+              [(ngModel)]="nuevaFirma.notario"
+              maxlength="150"
+              required
+              placeholder="Notario responsable"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block font-medium">
+              Referencia de escritura
+            </label>
+
+            <input
+              type="text"
+              name="referencia_escritura"
+              [(ngModel)]="nuevaFirma.referencia_escritura"
+              maxlength="100"
+              required
+              placeholder="Referencia administrativa"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block font-medium">
+              Observación (opcional)
+            </label>
+
+            <textarea
+              name="observacion_firma"
+              [(ngModel)]="nuevaFirma.observacion"
+              rows="3"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+            </textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button
+              type="submit"
+              [disabled]="formFirma.invalid || guardando"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     font-medium text-white
+                     hover:bg-slate-700
+                     disabled:opacity-50">
+
+              {{ guardando
+                 ? 'Guardando...'
+                 : 'Registrar firma' }}
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- HISTORIAL DE FIRMAS -->
+      <section class="mt-10">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Firmas registradas
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl
+                    bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+              <tr>
+                <th class="p-4">Firma</th>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Propiedad</th>
+                <th class="p-4">Fecha</th>
+                <th class="p-4">Notario</th>
+                <th class="p-4">Referencia</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (f of firmas; track f.firma) {
+
+                <tr class="border-b border-slate-100">
+                  <td class="p-4">#{{ f.firma }}</td>
+                  <td class="p-4">{{ f.nombre_cliente }}</td>
+                  <td class="p-4">{{ f.nombre_propiedad }}</td>
+                  <td class="p-4">
+                    {{ f.fecha_firma | date:'dd/MM/yyyy':'UTC' }}
+                  </td>
+                  <td class="p-4">{{ f.notario }}</td>
+                  <td class="p-4">
+                    {{ f.referencia_escritura }}
+                  </td>
+                </tr>
+
+              } @empty {
+
+                <tr>
+                  <td
+                    colspan="6"
+                    class="p-8 text-center text-slate-500">
+                    No hay firmas registradas.
+                  </td>
+                </tr>
+
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+    <!-- ===================================== -->
+    <!-- PESTAÑA ENTREGAS -->
+    <!-- ===================================== -->
+    @if (pestana === 'entregas') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Registrar entrega de vivienda
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Seleccione una firma que todavía no tenga
+          una entrega registrada.
+        </p>
+
+        <form
+          #formEntrega="ngForm"
+          (ngSubmit)="registrarEntrega()"
+          class="mt-6 grid gap-5 md:grid-cols-2">
+
+          <div class="md:col-span-2">
+
+            <label class="mb-2 block font-medium">
+              Firma registrada
+            </label>
+
+            <select
+              name="firma"
+              [(ngModel)]="nuevaEntrega.firma"
+              required
+              class="w-full rounded-lg border
+                     border-slate-300 bg-white p-3">
+
+              <option [ngValue]="null">
+                Seleccione una firma
+              </option>
+
+              @for (
+                f of firmasDisponibles;
+                track f.firma
+              ) {
+                <option [ngValue]="f.firma">
+                  Firma #{{ f.firma }} -
+                  {{ f.nombre_cliente }} -
+                  {{ f.nombre_propiedad }}
+                </option>
+              }
+            </select>
+
+            @if (firmasDisponibles.length === 0) {
+              <p class="mt-2 text-sm text-amber-700">
+                No hay firmas pendientes de entrega.
+              </p>
+            }
+
+            @if (firmaSeleccionada) {
+              <p class="mt-2 text-sm text-slate-500">
+                Fecha de firma:
+                {{ firmaSeleccionada.fecha_firma |
+                   date:'dd/MM/yyyy':'UTC' }}
+              </p>
+            }
+          </div>
+
+          <div>
+            <label class="mb-2 block font-medium">
+              Fecha de entrega
+            </label>
+
+            <input
+              type="date"
+              name="fecha_entrega"
+              [(ngModel)]="nuevaEntrega.fecha_entrega"
+              [min]="fechaMinimaEntrega"
+              required
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+          </div>
+
+          <div>
+            <label class="mb-2 block font-medium">
+              Responsable de entrega
+            </label>
+
+            <input
+              type="text"
+              name="responsable"
+              [(ngModel)]="nuevaEntrega.responsable"
+              maxlength="150"
+              required
+              placeholder="Nombre del responsable"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+          </div>
+
+          <div class="md:col-span-2">
+            <label class="mb-2 block font-medium">
+              Observación (opcional)
+            </label>
+
+            <textarea
+              name="observacion_entrega"
+              [(ngModel)]="nuevaEntrega.observacion"
+              rows="3"
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+            </textarea>
+          </div>
+
+          <div class="md:col-span-2">
+            <button
+              type="submit"
+              [disabled]="formEntrega.invalid || guardando"
+              class="rounded-lg bg-slate-900 px-6 py-3
+                     font-medium text-white
+                     hover:bg-slate-700
+                     disabled:opacity-50">
+
+              {{ guardando
+                 ? 'Guardando...'
+                 : 'Registrar entrega' }}
+            </button>
+          </div>
+
+        </form>
+      </section>
+
+      <!-- HISTORIAL DE ENTREGAS -->
+      <section class="mt-10">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Entregas registradas
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl
+                    bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+              <tr>
+                <th class="p-4">Entrega</th>
+                <th class="p-4">Firma</th>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Propiedad</th>
+                <th class="p-4">Fecha</th>
+                <th class="p-4">Responsable</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (e of entregas; track e.entrega) {
+
+                <tr class="border-b border-slate-100">
+                  <td class="p-4">#{{ e.entrega }}</td>
+                  <td class="p-4">#{{ e.firma }}</td>
+                  <td class="p-4">{{ e.nombre_cliente }}</td>
+                  <td class="p-4">{{ e.nombre_propiedad }}</td>
+                  <td class="p-4">
+                    {{ e.fecha_entrega | date:'dd/MM/yyyy':'UTC' }}
+                  </td>
+                  <td class="p-4">{{ e.responsable }}</td>
+                </tr>
+
+              } @empty {
+
+                <tr>
+                  <td
+                    colspan="6"
+                    class="p-8 text-center text-slate-500">
+                    No hay entregas registradas.
+                  </td>
+                </tr>
+
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    }
+
+  </main>
+</div>

@@ -36,7 +36,25 @@ export const routes: Routes = [
   {
     path: 'evaluaciones',
     loadComponent: () => import('./dashboard/evaluaciones/evaluaciones').then(m => m.Evaluaciones),
-    title: 'Reservas | Sistema de Gestión Inmobiliaria'
+    title: 'Evaluaciones | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
+    path: 'solicitudes', 
+    loadComponent: () => import('./dashboard/solicitudes/solicitudes').then(m => m.Solicitudes),
+    title: 'Solicitudes | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
+    path: 'documentos', 
+    loadComponent: () => import('./dashboard/documentos/documentos').then(m => m.Documentos),
+    title: 'Documentos | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
+    path: 'cierres', 
+    loadComponent: () => import('./dashboard/cierres/cierres').then(m => m.Cierres),
+    title: 'Cierres | Sistema de Gestión Inmobiliaria'
 
   },
   {

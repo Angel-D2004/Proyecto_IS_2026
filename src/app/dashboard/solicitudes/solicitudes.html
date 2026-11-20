@@ -1,0 +1,569 @@
+
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <main class="mx-auto max-w-6xl">
+
+    <!-- REGRESAR -->
+    <a
+      routerLink="/"
+      class="inline-flex items-center rounded-lg
+             bg-slate-900 px-5 py-3 text-sm
+             font-medium text-white hover:bg-slate-700">
+      ← Volver al inicio
+    </a>
+
+    <!-- ENCABEZADO -->
+    <div class="mt-8">
+      <h1 class="text-3xl font-bold text-slate-900">
+        Solicitudes de crédito
+      </h1>
+
+      <p class="mt-2 text-slate-500">
+        Registro de solicitudes bancarias y
+        seguimiento del proceso de financiamiento.
+      </p>
+    </div>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+      <div
+        class="mt-6 rounded-lg border px-5 py-4"
+        [class.border-green-200]="tipoMensaje === 'exito'"
+        [class.bg-green-50]="tipoMensaje === 'exito'"
+        [class.text-green-800]="tipoMensaje === 'exito'"
+        [class.border-red-200]="tipoMensaje === 'error'"
+        [class.bg-red-50]="tipoMensaje === 'error'"
+        [class.text-red-800]="tipoMensaje === 'error'">
+
+        <div class="flex items-center justify-between gap-4">
+          <p>{{ mensaje }}</p>
+
+          <button
+            type="button"
+            (click)="mensaje = ''"
+            class="font-bold">
+            ×
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- ================================== -->
+    <!-- REGISTRAR SOLICITUD -->
+    <!-- ================================== -->
+    <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+      <h2 class="text-xl font-semibold">
+        Registrar solicitud de crédito
+      </h2>
+
+      <p class="mt-2 text-sm text-slate-500">
+        Seleccione una reserva confirmada que tenga
+        evaluación crediticia aprobada.
+      </p>
+
+      <form
+        (ngSubmit)="registrarSolicitud()"
+        #formSolicitud="ngForm"
+        class="mt-6 grid gap-5 md:grid-cols-2">
+
+        <!-- RESERVA -->
+        <div class="md:col-span-2">
+
+          <label class="mb-2 block font-medium">
+            Reserva de vivienda
+          </label>
+
+          <select
+            name="reserva"
+            [(ngModel)]="nuevaSolicitud.reserva"
+            required
+            class="w-full rounded-lg border
+                   border-slate-300 bg-white p-3">
+
+            <option [ngValue]="null">
+              Seleccione una reserva
+            </option>
+
+            @for (
+              r of reservasDisponibles;
+              track r.reserva
+            ) {
+              <option [ngValue]="r.reserva">
+                Reserva #{{ r.reserva }} -
+                {{ r.nombre_cliente }} -
+                {{ r.nombre_propiedad }}
+              </option>
+            }
+          </select>
+
+          @if (reservaActual) {
+            <p class="mt-2 text-sm text-slate-500">
+              Precio de vivienda:
+              <strong>
+                Q{{ reservaActual.precio | number:'1.2-2' }}
+              </strong>
+            </p>
+          }
+
+          @if (reservasDisponibles.length === 0) {
+            <p class="mt-3 text-sm text-amber-700">
+              No hay reservas elegibles disponibles.
+              Compruebe que estén confirmadas, tengan
+              evaluación aprobada y no tengan una
+              solicitud registrada.
+            </p>
+          }
+
+        </div>
+
+        <!-- BANCO -->
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Entidad financiera
+          </label>
+
+          <input
+            type="text"
+            name="entidad_financiera"
+            [(ngModel)]="nuevaSolicitud.entidad_financiera"
+            maxlength="150"
+            required
+            placeholder="Nombre del banco"
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+        </div>
+
+        <!-- MONTO -->
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Monto solicitado (Q)
+          </label>
+
+          <input
+            type="number"
+            name="monto_solicitado"
+            [(ngModel)]="nuevaSolicitud.monto_solicitado"
+            min="0.01"
+            step="0.01"
+            required
+            placeholder="Ejemplo: 250000"
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+        </div>
+
+        <!-- PLAZO -->
+        <div>
+
+          <label class="mb-2 block font-medium">
+            Plazo en meses
+          </label>
+
+          <input
+            type="number"
+            name="plazo_meses"
+            [(ngModel)]="nuevaSolicitud.plazo_meses"
+            min="1"
+            step="1"
+            required
+            placeholder="Ejemplo: 240"
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+        </div>
+
+        <!-- OBSERVACIÓN INICIAL -->
+        <div class="md:col-span-2">
+
+          <label class="mb-2 block font-medium">
+            Observación inicial (opcional)
+          </label>
+
+          <textarea
+            name="observacion"
+            [(ngModel)]="nuevaSolicitud.observacion"
+            rows="3"
+            placeholder="Detalles de la solicitud..."
+            class="w-full rounded-lg border
+                   border-slate-300 p-3">
+          </textarea>
+        </div>
+
+        <div class="md:col-span-2">
+
+          <button
+            type="submit"
+            [disabled]="formSolicitud.invalid || guardando"
+            class="rounded-lg bg-slate-900 px-6 py-3
+                   font-medium text-white
+                   hover:bg-slate-700
+                   disabled:cursor-not-allowed
+                   disabled:opacity-50">
+
+            {{ guardando
+                ? 'Guardando...'
+                : 'Registrar solicitud' }}
+          </button>
+
+        </div>
+      </form>
+    </section>
+
+    <!-- ================================== -->
+    <!-- CONSULTAR SOLICITUDES -->
+    <!-- ================================== -->
+    <section class="mt-10">
+
+      <div class="mb-5 flex flex-wrap items-center
+                  justify-between gap-4">
+
+        <div>
+          <h2 class="text-xl font-semibold">
+            Solicitudes registradas
+          </h2>
+
+          <p class="mt-1 text-sm text-slate-500">
+            Consulte el estado de los trámites bancarios.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+
+          <select
+            name="filtroEstado"
+            [(ngModel)]="filtroEstado"
+            class="rounded-lg border border-slate-300
+                   bg-white p-3">
+
+            <option value="todas">Todas</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="en_revision">En revisión</option>
+            <option value="aprobada">Aprobadas</option>
+            <option value="rechazada">Rechazadas</option>
+          </select>
+
+          <button
+            type="button"
+            (click)="actualizarListados()"
+            class="rounded-lg border border-slate-300
+                   bg-white px-4 py-3 hover:bg-slate-100">
+
+            Actualizar
+          </button>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl
+                  bg-white shadow-sm">
+
+        <table class="w-full text-left text-sm">
+
+          <thead class="bg-slate-900 text-white">
+            <tr>
+              <th class="p-4">Solicitud</th>
+              <th class="p-4">Cliente</th>
+              <th class="p-4">Propiedad</th>
+              <th class="p-4">Banco</th>
+              <th class="p-4">Monto</th>
+              <th class="p-4">Estado</th>
+              <th class="p-4">Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            @for (
+              s of solicitudesFiltradas;
+              track s.solicitud
+            ) {
+
+              <tr class="border-b border-slate-100">
+
+                <td class="p-4 font-medium">
+                  #{{ s.solicitud }}
+                </td>
+
+                <td class="p-4">
+                  {{ s.nombre_cliente }}
+                </td>
+
+                <td class="p-4">
+                  {{ s.nombre_propiedad }}
+                </td>
+
+                <td class="p-4">
+                  {{ s.entidad_financiera }}
+                </td>
+
+                <td class="p-4">
+                  Q{{ s.monto_solicitado | number:'1.2-2' }}
+                </td>
+
+                <td class="p-4">
+
+                  <span
+                    class="rounded-full px-3 py-1
+                           text-xs font-semibold"
+                    [class.bg-amber-100]="s.estado === 'pendiente'"
+                    [class.text-amber-700]="s.estado === 'pendiente'"
+                    [class.bg-blue-100]="s.estado === 'en_revision'"
+                    [class.text-blue-700]="s.estado === 'en_revision'"
+                    [class.bg-green-100]="s.estado === 'aprobada'"
+                    [class.text-green-700]="s.estado === 'aprobada'"
+                    [class.bg-red-100]="s.estado === 'rechazada'"
+                    [class.text-red-700]="s.estado === 'rechazada'">
+
+                    {{ s.estado === 'en_revision'
+                        ? 'En revisión'
+                        : s.estado }}
+                  </span>
+                </td>
+
+                <td class="p-4">
+
+                  <button
+                    type="button"
+                    (click)="seleccionarSolicitud(s)"
+                    class="rounded-lg bg-slate-800
+                           px-4 py-2 text-white
+                           hover:bg-slate-600">
+
+                    Gestionar
+                  </button>
+                </td>
+              </tr>
+
+            } @empty {
+
+              <tr>
+                <td
+                  colspan="7"
+                  class="p-8 text-center text-slate-500">
+
+                  {{ cargando
+                     ? 'Cargando solicitudes...'
+                     : 'No hay solicitudes para mostrar.' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================== -->
+    <!-- GESTIONAR SOLICITUD -->
+    <!-- ================================== -->
+    @if (solicitudActual) {
+
+      <section class="mt-10 rounded-xl bg-white p-6 shadow-sm">
+
+        <div class="flex flex-wrap items-center
+                    justify-between gap-4">
+
+          <div>
+
+            <h2 class="text-xl font-semibold">
+              Gestionar solicitud #{{ solicitudActual.solicitud }}
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+              {{ solicitudActual.nombre_cliente }} -
+              {{ solicitudActual.nombre_propiedad }}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="solicitudSeleccionada = null"
+            class="rounded-lg border border-slate-300
+                   px-4 py-2 hover:bg-slate-100">
+            Cerrar
+          </button>
+        </div>
+
+        <!-- INFORMACIÓN -->
+        <div class="mt-6 grid gap-4 md:grid-cols-3">
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Entidad financiera
+            </p>
+            <p class="mt-2 font-semibold">
+              {{ solicitudActual.entidad_financiera }}
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Monto solicitado
+            </p>
+            <p class="mt-2 font-semibold">
+              Q{{ solicitudActual.monto_solicitado | number:'1.2-2' }}
+            </p>
+          </div>
+
+          <div class="rounded-lg bg-slate-50 p-4">
+            <p class="text-sm text-slate-500">
+              Plazo
+            </p>
+            <p class="mt-2 font-semibold">
+              {{ solicitudActual.plazo_meses }} meses
+            </p>
+          </div>
+        </div>
+
+        @if (solicitudActual.observacion) {
+          <div class="mt-5 rounded-lg bg-slate-50 p-4">
+            <p class="text-sm font-semibold">
+              Observación inicial
+            </p>
+            <p class="mt-2 text-sm text-slate-600">
+              {{ solicitudActual.observacion }}
+            </p>
+          </div>
+        }
+
+        <!-- ACTUALIZAR ESTADO -->
+        <div class="mt-8 border-t border-slate-200 pt-6">
+
+          <h3 class="text-lg font-semibold">
+            Estado de la solicitud
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Estado actual:
+            <strong>{{ solicitudActual.estado }}</strong>
+          </p>
+
+          @if (estadosDisponibles.length > 0) {
+
+            <form
+              (ngSubmit)="actualizarEstado()"
+              class="mt-5 flex flex-wrap items-end gap-4">
+
+              <div class="min-w-64 flex-1">
+
+                <label class="mb-2 block font-medium">
+                  Nuevo estado
+                </label>
+
+                <select
+                  name="estadoSeleccionado"
+                  [(ngModel)]="estadoSeleccionado"
+                  class="w-full rounded-lg border
+                         border-slate-300 bg-white p-3">
+
+                  <option
+                    [ngValue]="solicitudActual.estado"
+                    disabled>
+                    Seleccione un nuevo estado
+                  </option>
+
+                  @for (estado of estadosDisponibles; track estado) {
+
+                    <option [ngValue]="estado">
+                      {{ estado === 'en_revision'
+                         ? 'En revisión'
+                         : estado }}
+                    </option>
+                  }
+                </select>
+              </div>
+
+              <button
+                type="submit"
+                [disabled]="
+                  guardando ||
+                  !estadosDisponibles.includes(estadoSeleccionado)
+                "
+                class="rounded-lg bg-slate-900
+                       px-6 py-3 font-medium text-white
+                       hover:bg-slate-700
+                       disabled:opacity-50">
+
+                Guardar estado
+              </button>
+            </form>
+
+          } @else {
+
+            <div class="mt-4 rounded-lg bg-slate-100 p-4">
+              <p class="text-sm text-slate-600">
+                Esta solicitud ya tiene un estado final.
+                No se permiten más cambios de estado.
+              </p>
+            </div>
+
+          }
+
+        </div>
+
+        <!-- ================================== -->
+        <!-- SEGUIMIENTOS -->
+        <!-- ================================== -->
+        <div class="mt-8 border-t border-slate-200 pt-6">
+
+          <h3 class="text-lg font-semibold">
+            Historial de seguimiento
+          </h3>
+
+          <p class="mt-2 text-sm text-slate-500">
+            Registre observaciones del trámite bancario.
+          </p>
+
+          <form
+            (ngSubmit)="registrarSeguimiento()"
+            class="mt-5 space-y-4">
+
+            <textarea
+              name="nuevaObservacion"
+              [(ngModel)]="nuevaObservacion"
+              rows="3"
+              required
+              placeholder="Escriba una observación del trámite..."
+              class="w-full rounded-lg border
+                     border-slate-300 p-3">
+            </textarea>
+
+            <button
+              type="submit"
+              [disabled]="guardando || !nuevaObservacion.trim()"
+              class="rounded-lg bg-blue-700
+                     px-6 py-3 font-medium text-white
+                     hover:bg-blue-800
+                     disabled:opacity-50">
+
+              Agregar seguimiento
+            </button>
+          </form>
+
+          <div class="mt-6 space-y-3">
+
+            @for (seg of seguimientos; track seg.seguimiento) {
+
+              <div class="rounded-lg border
+                          border-slate-200 bg-slate-50 p-4">
+
+                <p class="text-slate-800">
+                  {{ seg.observacion }}
+                </p>
+
+                <p class="mt-2 text-xs text-slate-500">
+                  {{ seg.fecha_registro | date:'dd/MM/yyyy HH:mm' }}
+                </p>
+              </div>
+
+            } @empty {
+
+              <p class="py-4 text-sm text-slate-500">
+                No hay seguimientos registrados.
+              </p>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  </main>
+</div>

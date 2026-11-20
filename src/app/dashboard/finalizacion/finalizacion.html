@@ -1,0 +1,580 @@
+
+<div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
+
+  <main class="mx-auto max-w-6xl">
+
+    <a
+      routerLink="/"
+      class="inline-flex rounded-lg bg-slate-900
+             px-5 py-3 text-white hover:bg-slate-700">
+      ← Volver al inicio
+    </a>
+
+    <div class="mt-8 flex flex-wrap items-center
+                justify-between gap-4">
+
+      <div>
+        <h1 class="text-3xl font-bold text-slate-900">
+          Cierre de ventas y reportes
+        </h1>
+
+        <p class="mt-2 text-slate-500">
+          Gestión de ventas completadas
+          e indicadores del sistema inmobiliario.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="actualizarTodo()"
+        [disabled]="cargando"
+        class="rounded-lg border bg-white px-5 py-3
+               hover:bg-slate-100 disabled:opacity-50">
+        {{ cargando ? 'Actualizando...' : 'Actualizar' }}
+      </button>
+    </div>
+
+    <!-- MENSAJES -->
+    @if (mensaje) {
+      <div
+        class="mt-6 rounded-lg border p-4"
+        [class.bg-green-50]="tipoMensaje === 'exito'"
+        [class.text-green-800]="tipoMensaje === 'exito'"
+        [class.bg-red-50]="tipoMensaje === 'error'"
+        [class.text-red-800]="tipoMensaje === 'error'">
+        {{ mensaje }}
+      </div>
+    }
+
+    <!-- PESTAÑAS -->
+    <div class="mt-8 flex flex-wrap gap-3">
+
+      <button
+        type="button"
+        (click)="pestana = 'cierres'"
+        [class.bg-slate-900]="pestana === 'cierres'"
+        [class.text-white]="pestana === 'cierres'"
+        [class.bg-white]="pestana !== 'cierres'"
+        class="rounded-lg px-6 py-3 font-medium">
+        Cerrar ventas
+      </button>
+
+      <button
+        type="button"
+        (click)="pestana = 'reportes'"
+        [class.bg-slate-900]="pestana === 'reportes'"
+        [class.text-white]="pestana === 'reportes'"
+        [class.bg-white]="pestana !== 'reportes'"
+        class="rounded-lg px-6 py-3 font-medium">
+        Reportes e indicadores
+      </button>
+
+    </div>
+
+    <!-- ============================== -->
+    <!-- PESTAÑA CIERRE DE VENTAS -->
+    <!-- ============================== -->
+
+    @if (pestana === 'cierres') {
+
+      <section class="mt-6 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Completar venta inmobiliaria
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Seleccione una vivienda con entrega registrada
+          que todavía no tenga su venta completada.
+        </p>
+
+        <form
+          (ngSubmit)="cerrarVenta()"
+          class="mt-6 space-y-5">
+
+          <div>
+            <label class="mb-2 block font-medium">
+              Entrega pendiente de cierre
+            </label>
+
+            <select
+              name="entrega"
+              [(ngModel)]="entregaSeleccionada"
+              required
+              class="w-full rounded-lg border
+                     border-slate-300 bg-white p-3">
+
+              <option [ngValue]="null">
+                Seleccione una entrega
+              </option>
+
+              @for (
+                e of entregasDisponibles;
+                track e.entrega
+              ) {
+                <option [ngValue]="e.entrega">
+                  Entrega #{{ e.entrega }} -
+                  {{ e.nombre_cliente }} -
+                  {{ e.nombre_propiedad }}
+                </option>
+              }
+            </select>
+
+            @if (entregasDisponibles.length === 0) {
+              <p class="mt-2 text-sm text-amber-700">
+                No hay entregas pendientes de cierre.
+              </p>
+            }
+          </div>
+
+          @if (entregaActual) {
+            <div class="rounded-lg bg-slate-50 p-5">
+
+              <p>
+                <strong>Cliente:</strong>
+                {{ entregaActual.nombre_cliente }}
+              </p>
+
+              <p class="mt-2">
+                <strong>Propiedad:</strong>
+                {{ entregaActual.nombre_propiedad }}
+              </p>
+
+              <p class="mt-2">
+                <strong>Precio registrado:</strong>
+                Q{{ entregaActual.precio | number:'1.2-2' }}
+              </p>
+
+            </div>
+          }
+
+          <button
+            type="submit"
+            [disabled]="
+              entregaSeleccionada === null ||
+              guardando ||
+              cargando
+            "
+            class="rounded-lg bg-green-700 px-6 py-3
+                   font-medium text-white
+                   hover:bg-green-800 disabled:opacity-50">
+
+            {{ guardando
+               ? 'Completando venta...'
+               : 'Completar venta' }}
+          </button>
+
+          <p class="text-xs text-slate-500">
+            Esta acción registrará el cierre, marcará
+            la propiedad como vendida y actualizará
+            la oportunidad a ganada.
+          </p>
+
+        </form>
+      </section>
+
+      <!-- HISTORIAL -->
+      <section class="mt-10">
+
+        <h2 class="mb-5 text-xl font-semibold">
+          Historial de ventas completadas
+        </h2>
+
+        <div class="overflow-x-auto rounded-xl bg-white shadow-sm">
+
+          <table class="w-full text-left text-sm">
+
+            <thead class="bg-slate-900 text-white">
+              <tr>
+                <th class="p-4">Venta</th>
+                <th class="p-4">Cliente</th>
+                <th class="p-4">Propiedad</th>
+                <th class="p-4">Precio</th>
+                <th class="p-4">Fecha</th>
+                <th class="p-4">Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              @for (v of ventas; track v.venta) {
+                <tr class="border-b">
+
+                  <td class="p-4">#{{ v.venta }}</td>
+                  <td class="p-4">{{ v.nombre_cliente }}</td>
+                  <td class="p-4">{{ v.nombre_propiedad }}</td>
+
+                  <td class="p-4">
+                    Q{{ v.precio_cierre | number:'1.2-2' }}
+                  </td>
+
+                  <td class="p-4">
+                    {{ v.fecha_cierre | date:'dd/MM/yyyy' }}
+                  </td>
+
+                  <td class="p-4">
+                    <span class="rounded-full bg-green-100
+                                 px-3 py-1 text-green-800">
+                      Vendida
+                    </span>
+                  </td>
+
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6"
+                      class="p-6 text-center text-slate-500">
+                    No hay ventas cerradas.
+                  </td>
+                </tr>
+              }
+
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+
+    }
+
+    <!-- ============================== -->
+    <!-- PESTAÑA REPORTES -->
+    <!-- ============================== -->
+
+    @if (pestana === 'reportes') {
+
+      @if (resumen) {
+
+        <section class="mt-6">
+
+          <h2 class="mb-5 text-xl font-semibold">
+            Resumen general
+          </h2>
+
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">Clientes</p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.clientes }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">Propiedades</p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.propiedades }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-green-50 p-5">
+              <p class="text-sm text-green-800">
+                Viviendas vendidas
+              </p>
+              <p class="mt-2 text-3xl font-bold text-green-800">
+                {{ resumen.propiedades_vendidas }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-blue-50 p-5">
+              <p class="text-sm text-blue-800">
+                Ventas completadas
+              </p>
+              <p class="mt-2 text-3xl font-bold text-blue-800">
+                {{ resumen.ventas_completadas }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">
+                Oportunidades activas
+              </p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.oportunidades_activas }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">
+                Reservas activas
+              </p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.reservas_activas }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-white p-5 shadow-sm">
+              <p class="text-sm text-slate-500">
+                Créditos pendientes
+              </p>
+              <p class="mt-2 text-3xl font-bold">
+                {{ resumen.creditos_pendientes }}
+              </p>
+            </div>
+
+            <div class="rounded-xl bg-slate-900 p-5 text-white">
+              <p class="text-sm text-slate-300">
+                Valor de ventas cerradas
+              </p>
+              <p class="mt-2 text-2xl font-bold">
+                Q{{ resumen.monto_total_ventas | number:'1.2-2' }}
+              </p>
+            </div>
+
+          </div>
+
+          <p class="mt-3 text-xs text-slate-500">
+            Los montos corresponden al precio registrado
+            de las ventas cerradas, no a cobros recibidos.
+          </p>
+
+        </section>
+
+      }
+
+      <!-- VENTAS EN PROCESO -->
+      <section class="mt-10 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Ventas en proceso
+        </h2>
+
+        <div class="mt-5 overflow-x-auto">
+
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100">
+              <tr>
+                <th class="p-3">Oportunidad</th>
+                <th class="p-3">Cliente</th>
+                <th class="p-3">Propiedad</th>
+                <th class="p-3">Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (v of ventasProceso; track v.oportunidad) {
+                <tr class="border-b">
+                  <td class="p-3">#{{ v.oportunidad }}</td>
+                  <td class="p-3">{{ v.cliente }}</td>
+                  <td class="p-3">{{ v.propiedad }}</td>
+                  <td class="p-3">{{ v.estado_oportu }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="p-4 text-center">
+                    No hay ventas en proceso.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+
+      <!-- PROPIEDADES -->
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <div class="flex flex-wrap justify-between gap-4">
+
+          <h2 class="text-xl font-semibold">
+            Propiedades por estado
+          </h2>
+
+          <select
+            name="filtroPropiedad"
+            [(ngModel)]="filtroPropiedad"
+            class="rounded-lg border p-3">
+
+            <option value="todas">Todas</option>
+            <option value="disponible">Disponibles</option>
+            <option value="vendida">Vendidas</option>
+
+          </select>
+        </div>
+
+        <div class="mt-5 overflow-x-auto">
+
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100">
+              <tr>
+                <th class="p-3">Propiedad</th>
+                <th class="p-3">Precio</th>
+                <th class="p-3">Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (p of propiedadesFiltradas; track p.propiedad) {
+                <tr class="border-b">
+                  <td class="p-3">{{ p.nombre }}</td>
+                  <td class="p-3">
+                    Q{{ p.precio | number:'1.2-2' }}
+                  </td>
+                  <td class="p-3">{{ p.estado_venta }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="p-4 text-center">
+                    No hay propiedades para mostrar.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+
+      <!-- CONSULTAS ADICIONALES -->
+      <section class="mt-8 grid gap-5 lg:grid-cols-2">
+
+        <div class="rounded-xl bg-white p-6 shadow-sm">
+
+          <h2 class="text-lg font-semibold">
+            Créditos pendientes
+          </h2>
+
+          <div class="mt-4 space-y-3">
+            @for (c of creditosPendientes; track c.solicitud) {
+              <div class="rounded-lg bg-slate-50 p-3">
+                <p class="font-medium">
+                  #{{ c.solicitud }} — {{ c.nombre_cliente }}
+                </p>
+                <p class="text-sm text-slate-500">
+                  {{ c.entidad_financiera }} · {{ c.estado }}
+                </p>
+              </div>
+            } @empty {
+              <p class="text-sm text-slate-500">
+                No hay créditos pendientes.
+              </p>
+            }
+          </div>
+        </div>
+
+        <div class="rounded-xl bg-white p-6 shadow-sm">
+
+          <h2 class="text-lg font-semibold">
+            Reservas activas
+          </h2>
+
+          <div class="mt-4 space-y-3">
+            @for (r of reservasActivas; track r.reserva) {
+              <div class="rounded-lg bg-slate-50 p-3">
+                <p class="font-medium">
+                  #{{ r.reserva }} — {{ r.nombre_cliente }}
+                </p>
+                <p class="text-sm text-slate-500">
+                  {{ r.nombre_propiedad }} · {{ r.estado }}
+                </p>
+              </div>
+            } @empty {
+              <p class="text-sm text-slate-500">
+                No hay reservas activas.
+              </p>
+            }
+          </div>
+        </div>
+
+      </section>
+
+      <!-- CLIENTES Y OPORTUNIDADES -->
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <h2 class="text-xl font-semibold">
+          Clientes y oportunidades
+        </h2>
+
+        <div class="mt-5 max-h-72 overflow-auto">
+
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100">
+              <tr>
+                <th class="p-3">Cliente</th>
+                <th class="p-3">Oportunidad</th>
+                <th class="p-3">Propiedad</th>
+                <th class="p-3">Estado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (
+                c of clientesOportunidades;
+                track c.oportunidad
+              ) {
+                <tr class="border-b">
+                  <td class="p-3">{{ c.nombre_cliente }}</td>
+                  <td class="p-3">#{{ c.oportunidad }}</td>
+                  <td class="p-3">{{ c.nombre_propiedad }}</td>
+                  <td class="p-3">{{ c.estado_oportu }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="p-4 text-center">
+                    No hay oportunidades registradas.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+
+      <!-- REPORTE MENSUAL -->
+      <section class="mt-8 rounded-xl bg-white p-6 shadow-sm">
+
+        <div class="flex flex-wrap items-center
+                    justify-between gap-4">
+
+          <h2 class="text-xl font-semibold">
+            Reporte de ventas
+          </h2>
+
+          <button
+            type="button"
+            (click)="exportarCSV()"
+            class="rounded-lg bg-green-700 px-5 py-3
+                   font-medium text-white hover:bg-green-800">
+            Exportar historial CSV
+          </button>
+        </div>
+
+        <div class="mt-5 overflow-x-auto">
+
+          <table class="w-full text-left text-sm">
+            <thead class="bg-slate-100">
+              <tr>
+                <th class="p-3">Mes</th>
+                <th class="p-3">Cantidad de ventas</th>
+                <th class="p-3">Valor total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (m of ventasMensuales; track m.mes) {
+                <tr class="border-b">
+                  <td class="p-3">{{ m.mes }}</td>
+                  <td class="p-3">{{ m.cantidad_ventas }}</td>
+                  <td class="p-3">
+                    Q{{ m.monto_total | number:'1.2-2' }}
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="p-4 text-center">
+                    No hay ventas cerradas para reportar.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+        </div>
+      </section>
+
+    }
+
+  </main>
+</div>

@@ -1,59 +1,60 @@
-# ProyectoInmobiliaria
+# Sistema de Gestión Inmobiliaria
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.1.
+## Descripción
 
-## Development server
+Aplicación web para gestionar el proceso de venta de viviendas, desde el registro de clientes y prospectos hasta la formalización de la venta y la entrega de la propiedad.
 
-To start a local development server, run:
+## Tecnologías utilizadas
+
+- Frontend: Angular y Tailwind CSS
+- Backend: Node.js y Express
+- Base de datos: MySQL
+- Control de versiones: Git y GitHub
+
+## Módulos del sistema
+
+1. Gestión de clientes y propiedades.
+2. Gestión de citas y oportunidades.
+3. Seguimiento comercial y planes de pago.
+4. Evaluaciones crediticias.
+5. Reservas de viviendas.
+6. Solicitudes de crédito.
+7. Gestión de documentación.
+8. Firma de escrituras.
+9. Entrega de viviendas.
+10. Cierre de ventas y reportes.
+
+## Instalación
+
+### Base de datos
+
+1. Crear una base de datos MySQL.
+2. Importar el archivo SQL entregado.
+3. Configurar las variables de conexión del backend.
+
+### Backend
 
 ```bash
+cd backend
+npm install
+node src/server.js
+```
+
+### Frontend
+
+Desde la carpeta del proyecto Angular:
+
+```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+La aplicación se ejecuta en `http://localhost:4200`.
 
-## Code scaffolding
+## Pruebas
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+El proyecto fue desarrollado mediante sprints y pruebas de aceptación de las principales funcionalidades.
 
-```bash
-ng generate component component-name
-```
+## Limitaciones
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Este proyecto es un prototipo académico. Antes de su utilización en producción requiere completar los controles de autenticación, permisos de usuario, auditoría y protección de datos personales.

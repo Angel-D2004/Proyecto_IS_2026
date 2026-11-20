@@ -58,6 +58,12 @@ export const routes: Routes = [
 
   },
   {
+    path: 'finalizacion', 
+    loadComponent: () => import('./dashboard/finalizacion/finalizacion').then(m => m.Finalizacion),
+    title: 'Finalizacion de venta | Sistema de Gestión Inmobiliaria'
+
+  },
+  {
     path: '**',
     redirectTo: ''
   }

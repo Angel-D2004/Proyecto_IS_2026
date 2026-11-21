@@ -1,92 +1,477 @@
 
-<div class="flex min-h-screen items-center justify-center
-            bg-slate-100 px-5 py-10">
+<div class="min-h-screen bg-slate-50 lg:grid lg:grid-cols-2">
 
-  <div class="w-full max-w-md rounded-2xl
-              bg-white p-8 shadow-lg">
+  <!-- ===================================== -->
+  <!-- PANEL IZQUIERDO - PRESENTACIÓN SIGVI -->
+  <!-- ===================================== -->
 
-    <div class="mb-8 text-center">
+  <section
+    class="relative hidden min-h-screen flex-col
+           justify-between overflow-hidden
+           bg-gradient-to-br from-slate-950
+           via-slate-900 to-blue-950
+           p-12 text-white lg:flex xl:p-16">
 
-      <div class="mx-auto flex h-14 w-14 items-center
-                  justify-center rounded-2xl
-                  bg-slate-900 text-2xl font-bold text-white">
-        SI
+    <!-- ELEMENTOS DECORATIVOS -->
+    <div
+      class="pointer-events-none absolute -right-28
+             -top-28 h-96 w-96 rounded-full
+             bg-blue-500/10 blur-3xl">
+    </div>
+
+    <div
+      class="pointer-events-none absolute -bottom-32
+             -left-32 h-96 w-96 rounded-full
+             bg-cyan-500/10 blur-3xl">
+    </div>
+
+    <!-- IDENTIDAD -->
+    <div class="relative z-10">
+
+      <div class="inline-flex items-center gap-3">
+
+        <div
+          class="flex h-12 w-12 items-center justify-center
+                 rounded-xl border border-blue-400/30
+                 bg-blue-400/10">
+
+          <svg
+            class="h-7 w-7 text-blue-300"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.7">
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V10Z" />
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 21v-8h6v8" />
+
+          </svg>
+
+        </div>
+
+        <div>
+
+          <h1 class="text-2xl font-bold tracking-wide">
+            SIGVI
+          </h1>
+
+          <p class="text-xs text-slate-400">
+            Gestión Inmobiliaria
+          </p>
+
+        </div>
+
       </div>
 
-      <h1 class="mt-5 text-2xl font-bold text-slate-900">
-        Sistema Inmobiliario
-      </h1>
+    </div>
 
-      <p class="mt-2 text-sm text-slate-500">
-        Inicie sesión con su cuenta de empleado.
+    <!-- MENSAJE PRINCIPAL -->
+    <div class="relative z-10 max-w-xl">
+
+      <span
+        class="inline-flex items-center gap-2
+               rounded-full border border-blue-400/20
+               bg-blue-400/10 px-4 py-2
+               text-xs font-medium text-blue-200">
+
+        <span
+          class="h-2 w-2 rounded-full bg-blue-400">
+        </span>
+
+        Plataforma de gestión comercial
+
+      </span>
+
+      <h2
+        class="mt-8 text-4xl font-bold leading-tight
+               tracking-tight xl:text-5xl">
+
+        Todo el proceso inmobiliario,
+
+        <span class="text-blue-400">
+          en un solo lugar.
+        </span>
+
+      </h2>
+
+      <p
+        class="mt-6 max-w-lg text-base leading-8
+               text-slate-300">
+
+        Centraliza la gestión de clientes,
+        propiedades, oportunidades de venta,
+        reservas y solicitudes de crédito
+        desde una plataforma diseñada para
+        optimizar el seguimiento comercial.
+
+      </p>
+
+      <!-- BENEFICIOS -->
+      <div class="mt-10 space-y-5">
+
+        <div class="flex items-center gap-4">
+
+          <div
+            class="flex h-10 w-10 shrink-0 items-center
+                   justify-center rounded-xl
+                   bg-white/10 text-blue-300">
+
+            ✓
+
+          </div>
+
+          <div>
+
+            <p class="font-semibold text-white">
+              Gestión centralizada
+            </p>
+
+            <p class="text-sm text-slate-400">
+              Información organizada en un solo sistema.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="flex items-center gap-4">
+
+          <div
+            class="flex h-10 w-10 shrink-0 items-center
+                   justify-center rounded-xl
+                   bg-white/10 text-blue-300">
+
+            ✓
+
+          </div>
+
+          <div>
+
+            <p class="font-semibold text-white">
+              Seguimiento de operaciones
+            </p>
+
+            <p class="text-sm text-slate-400">
+              Control de cada etapa del proceso de venta.
+            </p>
+
+          </div>
+
+        </div>
+
+        <div class="flex items-center gap-4">
+
+          <div
+            class="flex h-10 w-10 shrink-0 items-center
+                   justify-center rounded-xl
+                   bg-white/10 text-blue-300">
+
+            ✓
+
+          </div>
+
+          <div>
+
+            <p class="font-semibold text-white">
+              Información para tomar decisiones
+            </p>
+
+            <p class="text-sm text-slate-400">
+              Consultas, indicadores y reportes comerciales.
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- PIE DEL PANEL -->
+    <div class="relative z-10">
+
+      <div class="border-t border-white/10 pt-6">
+
+        <p class="text-xs text-slate-400">
+
+          SIGVI · Sistema Integral de Gestión
+          de Ventas Inmobiliarias
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ===================================== -->
+  <!-- PANEL DERECHO - LOGIN -->
+  <!-- ===================================== -->
+
+  <section
+    class="flex min-h-screen items-center
+           justify-center px-6 py-12
+           sm:px-10 lg:px-12 xl:px-20">
+
+    <div class="w-full max-w-md">
+
+      <!-- LOGO -->
+      <div class="mb-10">
+
+        <img
+          src="/logo.png"
+          alt="Logo de SIGVI"
+          class="h-auto w-48 object-contain
+                 sm:w-56">
+
+        <div class="mt-9">
+
+          <span
+            class="inline-block rounded-full
+                   bg-blue-50 px-4 py-2
+                   text-xs font-semibold
+                   text-blue-700">
+
+            Acceso de empleados
+
+          </span>
+
+          <h2
+            class="mt-5 text-3xl font-bold
+                   tracking-tight text-slate-900
+                   sm:text-4xl">
+
+            Bienvenido de nuevo
+
+          </h2>
+
+          <p class="mt-3 text-sm leading-relaxed
+                    text-slate-500">
+
+            Inicia sesión con tus credenciales
+            para acceder a SIGVI.
+
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- MENSAJE DE ERROR -->
+      @if (mensaje) {
+
+        <div
+          role="alert"
+          class="mb-6 flex items-start gap-3
+                 rounded-xl border border-red-200
+                 bg-red-50 p-4 text-sm
+                 text-red-700">
+
+          <span class="font-bold">
+            !
+          </span>
+
+          <p>
+            {{ mensaje }}
+          </p>
+
+        </div>
+
+      }
+
+      <!-- FORMULARIO -->
+      <form
+        (ngSubmit)="ingresar()"
+        #loginForm="ngForm"
+        class="space-y-6">
+
+        <!-- CORREO -->
+        <div>
+
+          <label
+            for="email"
+            class="mb-2 block text-sm
+                   font-semibold text-slate-700">
+
+            Correo electrónico
+
+          </label>
+
+          <input
+            id="email"
+            type="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            email
+            autocomplete="username"
+            placeholder="nombre@empresa.com"
+            class="w-full rounded-xl border
+                   border-slate-300 bg-white
+                   px-4 py-3.5 text-slate-900
+                   shadow-sm outline-none
+                   transition-all
+                   placeholder:text-slate-400
+                   focus:border-blue-600
+                   focus:ring-4
+                   focus:ring-blue-100">
+
+        </div>
+
+        <!-- CONTRASEÑA -->
+        <div>
+
+          <label
+            for="contrasena"
+            class="mb-2 block text-sm
+                   font-semibold text-slate-700">
+
+            Contraseña
+
+          </label>
+
+          <input
+            id="contrasena"
+            type="password"
+            name="contrasena"
+            [(ngModel)]="contrasena"
+            required
+            autocomplete="current-password"
+            placeholder="Ingresa tu contraseña"
+            class="w-full rounded-xl border
+                   border-slate-300 bg-white
+                   px-4 py-3.5 text-slate-900
+                   shadow-sm outline-none
+                   transition-all
+                   placeholder:text-slate-400
+                   focus:border-blue-600
+                   focus:ring-4
+                   focus:ring-blue-100">
+
+        </div>
+
+        <!-- BOTÓN -->
+        <button
+          type="submit"
+          [disabled]="loginForm.invalid || cargando"
+          class="group flex w-full items-center
+                 justify-center gap-3 rounded-xl
+                 bg-gradient-to-r from-slate-900
+                 to-blue-900 px-5 py-4
+                 font-semibold text-white
+                 shadow-lg shadow-blue-900/10
+                 transition-all
+                 hover:from-blue-900
+                 hover:to-blue-700
+                 hover:shadow-xl
+                 disabled:cursor-not-allowed
+                 disabled:opacity-50">
+
+          @if (cargando) {
+
+            <span
+              class="h-5 w-5 animate-spin rounded-full
+                     border-2 border-white/30
+                     border-t-white">
+            </span>
+
+            Ingresando...
+
+          } @else {
+
+            Iniciar sesión
+
+            <span
+              class="text-lg transition-transform
+                     group-hover:translate-x-1">
+
+              →
+
+            </span>
+
+          }
+
+        </button>
+
+      </form>
+
+      <!-- INFORMACIÓN -->
+      <div
+        class="mt-9 rounded-xl border
+               border-slate-200 bg-white p-4">
+
+        <div class="flex items-start gap-3">
+
+          <div
+            class="flex h-9 w-9 shrink-0
+                   items-center justify-center
+                   rounded-lg bg-blue-50
+                   text-blue-700">
+
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.8">
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12 3 4 7v5c0 5 3.5 8 8 9 4.5-1 8-4 8-9V7l-8-4Z" />
+
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="m9 12 2 2 4-4" />
+
+            </svg>
+
+          </div>
+
+          <div>
+
+            <p class="text-sm font-semibold text-slate-800">
+              Acceso exclusivo para personal autorizado
+            </p>
+
+            <p
+              class="mt-1 text-xs leading-relaxed
+                     text-slate-500">
+
+              Si no cuentas con credenciales,
+              comunícate con el responsable
+              del sistema.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <p
+        class="mt-10 text-center text-xs
+               text-slate-400">
+
+        SIGVI · Sistema Integral de Gestión
+        de Ventas Inmobiliarias
+
       </p>
 
     </div>
 
-    @if (mensaje) {
-      <div class="mb-5 rounded-lg bg-red-50
-                  p-4 text-sm text-red-700">
-        {{ mensaje }}
-      </div>
-    }
-
-    <form (ngSubmit)="ingresar()" #loginForm="ngForm">
-
-      <div>
-        <label class="mb-2 block text-sm font-medium">
-          Correo electrónico
-        </label>
-
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="email"
-          required
-          email
-          autocomplete="username"
-          placeholder="empleado@empresa.com"
-          class="w-full rounded-lg border
-                 border-slate-300 px-4 py-3
-                 focus:border-slate-700
-                 focus:outline-none">
-      </div>
-
-      <div class="mt-5">
-        <label class="mb-2 block text-sm font-medium">
-          Contraseña
-        </label>
-
-        <input
-          type="password"
-          name="contrasena"
-          [(ngModel)]="contrasena"
-          required
-          autocomplete="current-password"
-          placeholder="Ingrese su contraseña"
-          class="w-full rounded-lg border
-                 border-slate-300 px-4 py-3
-                 focus:border-slate-700
-                 focus:outline-none">
-      </div>
-
-      <button
-        type="submit"
-        [disabled]="loginForm.invalid || cargando"
-        class="mt-7 w-full rounded-lg bg-slate-900
-               px-5 py-3 font-semibold text-white
-               hover:bg-slate-700 disabled:opacity-50">
-
-        {{ cargando
-           ? 'Ingresando...'
-           : 'Iniciar sesión' }}
-      </button>
-
-    </form>
-
-    <p class="mt-6 text-center text-xs text-slate-500">
-      Acceso exclusivo para personal autorizado.
-    </p>
-
-  </div>
+  </section>
 
 </div>

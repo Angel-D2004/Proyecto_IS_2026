@@ -1,11 +1,10 @@
-
 <div class="min-h-screen bg-slate-50 px-6 py-10 text-slate-800">
 
   <main class="mx-auto max-w-6xl">
 
     <!-- Regresar al inicio -->
     <a
-      routerLink="/"
+      routerLink="/panel"
       class="mb-6 inline-flex items-center gap-2 rounded-lg
              bg-slate-900 px-5 py-3 text-sm font-medium
              text-white transition hover:bg-slate-700">
@@ -915,6 +914,7 @@
               <select
                 name="opcionPago"
                 [(ngModel)]="nuevoPlanPago.opcion_pago"
+                (ngModelChange)="cambiarOpcionPago()"
                 class="w-full rounded-lg border border-slate-300 p-3">
 
                 <option [ngValue]="null">
@@ -930,7 +930,8 @@
               </select>
             </div>
 
-            <!-- Enganche -->
+            <!-- Enganche: no corresponde en pago al contado -->
+            @if (tipoPagoSeleccionado !== 'contado') {
             <div>
               <label class="mb-2 block font-medium">
                 Enganche acordado (Q)
@@ -949,6 +950,14 @@
                 Este monto es un acuerdo, no un pago recibido.
               </p>
             </div>
+
+            } @else {
+              <div class="md:col-span-2">
+                <p class="mt-1 text-xs text-slate-500">
+                  Pago al contado: no requiere enganche ni financiamiento.
+                </p>
+              </div>
+            }
 
             <!-- Condiciones para financiamiento -->
             @if (tipoPagoSeleccionado === 'financiamiento') {
@@ -1043,7 +1052,8 @@
                 (click)="registrarPlanPago()"
                 [disabled]="guardandoPago ||
                             nuevoPlanPago.opcion_pago === null ||
-                            nuevoPlanPago.enganche === null"
+                            (tipoPagoSeleccionado !== 'contado' &&
+                             nuevoPlanPago.enganche === null)"
                 class="rounded-lg bg-slate-900 px-6 py-3
                       font-medium text-white
                       hover:bg-slate-700
@@ -1076,10 +1086,17 @@
                   {{ planRegistrado.nombre_opcion }}
                 </p>
 
-                <p>
-                  <strong>Enganche:</strong>
-                  Q{{ planRegistrado.enganche }}
-                </p>
+                @if (planRegistrado.codigo !== 'contado') {
+                  <p>
+                    <strong>Enganche:</strong>
+                    Q{{ planRegistrado.enganche }}
+                  </p>
+                } @else {
+                  <p>
+                    <strong>Modalidad:</strong>
+                    Pago al contado, sin enganche.
+                  </p>
+                }
 
                 @if (planRegistrado.codigo === 'financiamiento') {
 

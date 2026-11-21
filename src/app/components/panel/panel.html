@@ -1,110 +1,265 @@
 
 <div class="min-h-screen bg-slate-50 text-slate-800">
 
-  <header class="border-b border-slate-200 bg-white">
+  <!-- ===================================== -->
+  <!-- HEADER -->
+  <!-- ===================================== -->
+  <header class="sticky top-0 z-50 border-b border-slate-200
+                 bg-white/95 shadow-sm backdrop-blur">
 
-    <div class="mx-auto flex max-w-7xl
-                flex-wrap items-center justify-between
-                gap-4 px-6 py-5">
+    <div class="mx-auto flex max-w-7xl flex-wrap
+                items-center justify-between gap-4
+                px-6 py-4">
 
-      <div>
-        <h1 class="text-xl font-bold text-slate-900">
-          Sistema Inmobiliario
-        </h1>
+      <!-- LOGO SIGVI -->
+      <div class="flex items-center">
 
-        <p class="text-sm text-slate-500">
-          Gestión de ventas inmobiliarias
-        </p>
+        <img
+          src="/logo.png"
+          class="h-16 w-auto max-w-[300px] object-contain
+                 sm:h-20 sm:max-w-[300px]">
+
       </div>
 
-      <button
-        type="button"
-        (click)="salir()"
-        class="rounded-lg bg-red-50 px-5 py-3
-               font-medium text-red-700
-               hover:bg-red-100">
-        Cerrar sesión
-      </button>
+      <!-- INFORMACIÓN DEL USUARIO -->
+      <div class="flex items-center gap-4">
+
+        @if (usuario) {
+
+          <div class="hidden text-right sm:block">
+
+            <p class="text-sm font-semibold text-slate-900">
+              {{ usuario.nombre }}
+            </p>
+
+            <p class="text-xs text-slate-500">
+              {{ rolTexto }}
+            </p>
+
+          </div>
+
+          <div class="flex h-10 w-10 items-center justify-center
+                      rounded-full bg-blue-100
+                      font-bold text-blue-700">
+
+            {{ usuario.nombre.charAt(0).toUpperCase() }}
+
+          </div>
+
+        }
+
+        <button
+          type="button"
+          (click)="salir()"
+          class="flex items-center gap-2 rounded-lg
+                 border border-red-200 bg-red-50
+                 px-4 py-2.5 text-sm font-medium
+                 text-red-700 transition
+                 hover:bg-red-100">
+
+          Cerrar sesión
+
+        </button>
+
+      </div>
 
     </div>
+
   </header>
 
+  <!-- ===================================== -->
+  <!-- CONTENIDO PRINCIPAL -->
+  <!-- ===================================== -->
   <main class="mx-auto max-w-7xl px-6 py-10">
 
     @if (cargando) {
-      <p class="text-slate-500">
-        Cargando información del usuario...
-      </p>
+
+      <div class="flex min-h-64 items-center justify-center">
+
+        <p class="text-slate-500">
+          Cargando información del usuario...
+        </p>
+
+      </div>
+
     }
 
     @if (usuario) {
 
+      <!-- ===================================== -->
       <!-- BIENVENIDA -->
-      <section class="rounded-2xl bg-slate-900
-                      p-8 text-white">
+      <!-- ===================================== -->
+      <section
+        class="relative overflow-hidden rounded-2xl
+               bg-gradient-to-r from-slate-900
+               via-slate-800 to-blue-900
+               p-8 text-white shadow-lg md:p-10">
 
-        <p class="text-sm text-slate-300">
-          Bienvenido al sistema
-        </p>
+        <!-- DECORACIÓN -->
+        <div class="absolute -right-12 -top-12
+                    h-48 w-48 rounded-full
+                    bg-blue-400/10">
+        </div>
 
-        <h2 class="mt-3 text-3xl font-bold">
-          {{ usuario.nombre }}
-        </h2>
+        <div class="absolute -bottom-20 right-28
+                    h-48 w-48 rounded-full
+                    bg-white/5">
+        </div>
 
-        <p class="mt-2 text-slate-300">
-          {{ rolTexto }} · {{ usuario.email }}
-        </p>
+        <div class="relative z-10">
+
+          <span
+            class="inline-block rounded-full
+                   border border-blue-400/30
+                   bg-blue-400/10 px-4 py-1.5
+                   text-xs font-medium text-blue-200">
+
+            SIGVI · Panel de {{ rolTexto }}
+
+          </span>
+
+          <p class="mt-6 text-sm text-slate-300">
+            Bienvenido nuevamente
+          </p>
+
+          <h1 class="mt-2 text-3xl font-bold
+                     tracking-tight md:text-4xl">
+
+            {{ usuario.nombre }}
+
+          </h1>
+
+          <p class="mt-3 max-w-xl text-sm
+                    leading-relaxed text-slate-300">
+
+            Accede a las herramientas del sistema
+            para gestionar y dar seguimiento a
+            las operaciones inmobiliarias.
+
+          </p>
+
+        </div>
 
       </section>
 
-      <!-- ENCABEZADO POR ROL -->
-      <section class="mt-9">
+      <!-- ===================================== -->
+      <!-- TÍTULO DEL PANEL -->
+      <!-- ===================================== -->
+      <section class="mt-10">
 
-        <h2 class="text-2xl font-bold">
-          {{ tituloPanel }}
-        </h2>
+        <div class="flex flex-wrap items-end
+                    justify-between gap-4">
 
-        <p class="mt-2 text-slate-500">
-          {{ descripcionPanel }}
-        </p>
+          <div>
+
+            <p class="mb-2 text-xs font-semibold
+                      uppercase tracking-widest text-blue-700">
+
+              Área de trabajo
+
+            </p>
+
+            <h2 class="text-2xl font-bold
+                       tracking-tight text-slate-900">
+
+              {{ tituloPanel }}
+
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+
+              {{ descripcionPanel }}
+
+            </p>
+
+          </div>
+
+          <span
+            class="rounded-lg border border-slate-200
+                   bg-white px-4 py-2 text-xs
+                   font-medium text-slate-600">
+
+            {{ opciones.length }} módulos disponibles
+
+          </span>
+
+        </div>
 
       </section>
 
-      <!-- OPCIONES DEL PANEL -->
-      <section class="mt-7 grid gap-5
-                      md:grid-cols-2 lg:grid-cols-3">
+      <!-- ===================================== -->
+      <!-- TARJETAS DE MÓDULOS -->
+      <!-- ===================================== -->
+      <section
+        class="mt-7 grid gap-5
+               md:grid-cols-2 lg:grid-cols-3">
 
         @for (opcion of opciones; track opcion.ruta) {
 
           <a
             [routerLink]="opcion.ruta"
-            class="group rounded-xl border
+            class="group relative flex min-h-56
+                   flex-col rounded-2xl border
                    border-slate-200 bg-white
-                   p-6 shadow-sm transition
-                   hover:-translate-y-1
-                   hover:border-slate-400
-                   hover:shadow-md">
+                   p-6 shadow-sm transition-all
+                   duration-200 hover:-translate-y-1
+                   hover:border-blue-300
+                   hover:shadow-lg">
 
-            <div class="mb-5 flex h-11 w-11
-                        items-center justify-center
-                        rounded-lg bg-slate-100
-                        text-xl text-slate-700">
+            <!-- ICONO -->
+            <div
+              class="mb-6 flex h-12 w-12
+                     items-center justify-center
+                     rounded-xl bg-blue-50
+                     text-xl font-bold text-blue-700
+                     transition-colors
+                     group-hover:bg-blue-700
+                     group-hover:text-white">
+
               ↗
+
             </div>
 
-            <h3 class="text-lg font-semibold
-                       text-slate-900">
+            <!-- NOMBRE -->
+            <h3 class="text-lg font-bold text-slate-900
+                       transition-colors
+                       group-hover:text-blue-700">
+
               {{ opcion.nombre }}
+
             </h3>
 
-            <p class="mt-2 text-sm text-slate-500">
+            <!-- DESCRIPCIÓN -->
+            <p class="mt-2 flex-1 text-sm
+                      leading-relaxed text-slate-500">
+
               {{ opcion.descripcion }}
+
             </p>
 
-            <p class="mt-5 text-sm font-medium
-                      text-blue-700">
-              Acceder al módulo →
-            </p>
+            <!-- ACCESO -->
+            <div
+              class="mt-6 flex items-center
+                     justify-between border-t
+                     border-slate-100 pt-4">
+
+              <span class="text-sm font-semibold
+                           text-blue-700">
+
+                Acceder al módulo
+
+              </span>
+
+              <span
+                class="text-lg text-blue-700
+                       transition-transform
+                       group-hover:translate-x-1">
+
+                →
+
+              </span>
+
+            </div>
 
           </a>
 
@@ -112,15 +267,62 @@
 
       </section>
 
-      <!-- ACLARACIÓN DEL PROTOTIPO -->
-      <p class="mt-8 text-xs text-slate-500">
-        Las opciones mostradas dependen del rol.
-        Las restricciones de permisos por módulo
-        forman parte de una mejora futura.
-      </p>
+      <!-- ===================================== -->
+      <!-- INFORMACIÓN DEL SISTEMA -->
+      <!-- ===================================== -->
+      <section
+        class="mt-10 flex flex-wrap items-center
+               justify-between gap-4 rounded-xl
+               border border-slate-200
+               bg-white px-6 py-5">
+
+        <div>
+
+          <p class="text-sm font-semibold text-slate-900">
+            Sistema Integral de Gestión de Ventas Inmobiliarias
+          </p>
+
+          <p class="mt-1 text-xs text-slate-500">
+            Plataforma de administración y seguimiento comercial.
+          </p>
+
+        </div>
+
+        <span
+          class="rounded-full bg-blue-50
+                 px-4 py-2 text-xs
+                 font-medium text-blue-700">
+
+          SIGVI
+
+        </span>
+
+      </section>
 
     }
 
   </main>
+
+  <!-- ===================================== -->
+  <!-- FOOTER -->
+  <!-- ===================================== -->
+  <footer class="mt-12 border-t border-slate-200 bg-white">
+
+    <div class="mx-auto flex max-w-7xl
+                flex-wrap items-center
+                justify-between gap-3
+                px-6 py-6">
+
+      <p class="text-sm font-semibold text-slate-700">
+        SIGVI
+      </p>
+
+      <p class="text-xs text-slate-500">
+        Sistema Integral de Gestión de Ventas Inmobiliarias
+      </p>
+
+    </div>
+
+  </footer>
 
 </div>

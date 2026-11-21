@@ -246,11 +246,11 @@ SIGVI es un **prototipo académico**. Antes de un uso con datos reales se requie
 
 El análisis y la planificación del proyecto contemplan los siguientes entregables, cuando estén incluidos en el repositorio:
 
-- `Epics.md` — épicas y alcance del sistema.
-- `UserStoryMapping.md` — organización de historias de usuario.
-- `SprintPlanning.md` — objetivos, priorización y distribución por sprints.
+- `Entrega 1-Grupo 6-Angel Diaz-22001839.pdf` — épicas y alcance del sistema.
+- `Entrega 2-Grupo 6-Angel Diaz-22001839.pdf` — organización de historias de usuario.
+- `Release-Grupo6-AngelDiaz-22001839.pdf` — objetivos, priorización y distribución por sprints.
 
-Verificar la ubicación de estos archivos y ajustar sus enlaces al publicarlos.
+
 
 ---
 

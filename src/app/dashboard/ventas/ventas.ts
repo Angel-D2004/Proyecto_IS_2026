@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -447,6 +446,18 @@ export class Ventas implements OnInit {
     return opcion?.codigo || '';
   }
 
+  // Al contado no hay enganche ni condiciones bancarias.
+  cambiarOpcionPago(): void {
+    if (this.tipoPagoSeleccionado === 'contado') {
+      this.nuevoPlanPago.enganche = 0;
+      this.nuevoPlanPago.plazo_meses = null;
+      this.nuevoPlanPago.tasa_anual = null;
+      this.nuevoPlanPago.entidad_financiera = '';
+    }
+
+    this.mensajePago = '';
+  }
+
 
   // ============================================
   // SELECCIONAR OPORTUNIDAD
@@ -536,6 +547,14 @@ export class Ventas implements OnInit {
     }
 
 
+    // Normalizar el plan antes de comparar y guardar.
+    if (this.tipoPagoSeleccionado === 'contado') {
+      this.nuevoPlanPago.enganche = 0;
+      this.nuevoPlanPago.plazo_meses = null;
+      this.nuevoPlanPago.tasa_anual = null;
+      this.nuevoPlanPago.entidad_financiera = '';
+    }
+
     // Verificar si el plan ya existe y no tiene cambios
     if (this.planRegistrado) {
 
@@ -574,7 +593,7 @@ export class Ventas implements OnInit {
       !Number.isFinite(this.nuevoPlanPago.enganche) ||
       this.nuevoPlanPago.enganche < 0
     ) {
-      this.mensajePago = 'Seleccione una opción e ingrese un enganche válido';
+      this.mensajePago = 'Seleccione una opción e ingrese un enganche válido (Q0 permitido)';
       return;
     }
 

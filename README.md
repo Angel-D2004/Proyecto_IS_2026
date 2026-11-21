@@ -242,17 +242,17 @@ SIGVI es un **prototipo académico**. Antes de un uso con datos reales se requie
 
 > El registro administrativo de firmas y entregas **no sustituye una escritura legal, el acto notarial ni la validación auténtica de documentos**.
 
+
 ## 📚 Documentación del proyecto
 
-El análisis y la planificación del proyecto contemplan los siguientes entregables, cuando estén incluidos en el repositorio:
+El análisis y la planificación de SIGVI se realizaron mediante los siguientes entregables:
 
-- `Entrega 1-Grupo 6-Angel Diaz-22001839.pdf` — épicas y alcance del sistema.
-- `Entrega 2-Grupo 6-Angel Diaz-22001839.pdf` — organización de historias de usuario.
-- `Release-Grupo6-AngelDiaz-22001839.pdf` — objetivos, priorización y distribución por sprints.
+- 📄 [Entrega 1 — Épicas y alcance del sistema](<./Entrega 1-Grupo 6-Angel Diaz-22001839.pdf>)
+- 📄 [Entrega 2 — Historias de usuario](<./Entrega 2-Grupo 6-Angel Diaz-22001839.pdf>)
+- 📄 [Release — Planificación de sprints](<./Release-Grupo6-AngelDiaz-22001839.pdf>)
 
+Estos documentos contienen el análisis inicial, las historias de usuario, la priorización de funcionalidades y la planificación del desarrollo por sprints.
 
-
----
 
 **SIGVI · Sistema Integral de Gestión de Ventas Inmobiliarias**  
 *Proyecto académico de desarrollo de software · Guatemala · 2026*

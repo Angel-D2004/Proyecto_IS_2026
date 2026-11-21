@@ -247,9 +247,9 @@ SIGVI es un **prototipo académico**. Antes de un uso con datos reales se requie
 
 El análisis y la planificación de SIGVI se realizaron mediante los siguientes entregables:
 
-- 📄 [Entrega 1 — Épicas y alcance del sistema](<./Entrega 1-Grupo 6-Angel Diaz-22001839.pdf>)
-- 📄 [Entrega 2 — Historias de usuario](<./Entrega 2-Grupo 6-Angel Diaz-22001839.pdf>)
-- 📄 [Release — Planificación de sprints](<./Release-Grupo6-AngelDiaz-22001839.pdf>)
+- 📄 [Épicas y alcance del sistema](<./Epics.md>)
+- 📄 [Historias de usuario](<./UserStoryMapping.md>)
+- 📄 [Release — Planificación de sprints](<./SprintPlanning.md>)
 
 Estos documentos contienen el análisis inicial, las historias de usuario, la priorización de funcionalidades y la planificación del desarrollo por sprints.
 
